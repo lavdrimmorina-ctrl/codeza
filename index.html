@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
   <meta name="description" content="Codeza - A minimalist digital manuscript for musicians." />
@@ -53,7 +53,7 @@
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-    body{font-family:var(--font-ui);background:var(--bg-primary);color:var(--text-primary);min-height:100dvh;overflow:hidden;transition:background var(--transition),color var(--transition);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    body{font-family:var(--font-ui);background:var(--bg-primary);color:var(--text-primary);min-height:100dvh;overflow:hidden;transition:background var(--transition),color var(--transition);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;touch-action:manipulation}
     ::selection{background:var(--accent-muted)}
     #app{display:flex;height:100dvh;position:relative;overflow:hidden}
     /* Sidebar */
@@ -1042,6 +1042,109 @@
       .folder-songs-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
     }
 
+
+    /* ── Prevent double-tap zoom on all interactive elements ── */
+    button, input, select, textarea, a {
+      touch-action: manipulation;
+    }
+
+    /* ── Safe-area topbar offset for iPadOS ─────────────────── */
+    /* Push the entire app shell below the iPadOS status/title bar */
+    #app {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    /* Topbar: taller hit area, clear visual separation from OS chrome */
+    :root {
+      --topbar-h: 56px;
+      --topbar-top-gap: env(safe-area-inset-top, 0px);
+    }
+
+    /* Sidebar header matches topbar */
+    .sidebar-header {
+      padding-top: max(14px, env(safe-area-inset-top, 14px));
+      height: calc(var(--topbar-h) + env(safe-area-inset-top, 0px));
+    }
+
+    #topbar {
+      height: var(--topbar-h);
+    }
+
+    /* Extra visible separator line under topbar to distinguish from OS bar */
+    #topbar::before {
+      content: none;
+    }
+
+
+    /* ── Collapsible sidebar (all screen sizes) ─────────────── */
+    :root {
+      --sidebar-collapsed-w: 0px;
+    }
+
+    #sidebar {
+      /* transition already set — just ensure width is included */
+      transition: width 280ms cubic-bezier(0.4,0,0.2,1),
+                  transform var(--transition),
+                  opacity var(--transition);
+      overflow: hidden;
+    }
+
+    #sidebar.collapsed {
+      width: 0 !important;
+      min-width: 0 !important;
+      border-right: none;
+    }
+
+    /* Thin re-open strip on left edge of main area */
+    #sidebar-reopen {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 18px;
+      z-index: 25;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+    #sidebar-reopen.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #sidebar-reopen-tab {
+      width: 4px;
+      height: 48px;
+      background: var(--border-default);
+      border-radius: 0 3px 3px 0;
+      transition: background var(--transition), width 150ms ease;
+    }
+    #sidebar-reopen:hover #sidebar-reopen-tab {
+      background: var(--text-tertiary);
+      width: 6px;
+    }
+
+    /* Collapse button inside sidebar header */
+    .sidebar-collapse-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      border: none; background: transparent;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sidebar-collapse-btn:hover {
+      background: var(--accent-soft);
+      color: var(--text-secondary);
+    }
+    .sidebar-collapse-btn svg {
+      width: 16px; height: 16px; stroke-width: 1.8;
+    }
+
   </style>
 </head>
 <body>
@@ -1081,6 +1184,7 @@
       <div class="sidebar-actions">
         <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme"><i data-lucide="moon"></i></button>
         <button class="icon-btn" id="new-song-btn" aria-label="New song (Cmd N)"><i data-lucide="plus"></i></button>
+        <button class="sidebar-collapse-btn" id="sidebar-collapse-btn" aria-label="Collapse sidebar" title="Collapse sidebar"><i data-lucide="panel-left-close"></i></button>
       </div>
     </div>
     <div class="sidebar-search">
@@ -1114,6 +1218,10 @@
   </aside>
 
   <main id="main">
+    <!-- Sidebar re-open strip (visible when sidebar is collapsed) -->
+    <div id="sidebar-reopen" aria-label="Open sidebar" role="button" tabindex="0">
+      <div id="sidebar-reopen-tab"></div>
+    </div>
     <header id="topbar">
       <div class="topbar-left">
         <button class="icon-btn icon-btn--lg" id="sidebar-toggle" aria-label="Toggle sidebar" style="display:none;"><i data-lucide="panel-left"></i></button>
@@ -1756,6 +1864,24 @@ function wrapChord(ta){const s=ta.selectionStart,e=ta.selectionEnd;const sel=ta.
 function checkSidebarToggle(){const t=document.getElementById('sidebar-toggle');if(window.innerWidth<=768){if(t)t.style.display='flex'}else{if(t)t.style.display='none';closeSidebar()}}
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.add('open')}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open')}
+function collapseSidebar(){
+  const sidebar=document.getElementById('sidebar');
+  const reopen=document.getElementById('sidebar-reopen');
+  const btn=document.getElementById('sidebar-collapse-btn');
+  sidebar.classList.add('collapsed');
+  if(reopen)reopen.classList.add('visible');
+  if(btn){const i=btn.querySelector('[data-lucide]');if(i){i.setAttribute('data-lucide','panel-left-open');refreshLucide();}}
+  putSetting('sidebarCollapsed','1');
+}
+function expandSidebar(){
+  const sidebar=document.getElementById('sidebar');
+  const reopen=document.getElementById('sidebar-reopen');
+  const btn=document.getElementById('sidebar-collapse-btn');
+  sidebar.classList.remove('collapsed');
+  if(reopen)reopen.classList.remove('visible');
+  if(btn){const i=btn.querySelector('[data-lucide]');if(i){i.setAttribute('data-lucide','panel-left-close');refreshLucide();}}
+  putSetting('sidebarCollapsed','0');
+}
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('install-banner')?.classList.add('visible')});
 
@@ -2690,12 +2816,25 @@ async function boot(){
     if(sl)sl.value=savedSpeed;
   }
   const fv=document.getElementById('font-val');if(fv)fv.textContent=state.perfFontSize;
-  await refreshFolders();await refreshSongs();showView('home');checkSidebarToggle();window.addEventListener('resize',checkSidebarToggle);refreshLucide();
+  await refreshFolders();await refreshSongs();showView('home');checkSidebarToggle();
+  // Restore sidebar collapsed state
+  const sc=await getSetting('sidebarCollapsed');
+  if(sc==='1')collapseSidebar();
+window.addEventListener('resize',checkSidebarToggle);refreshLucide();
   document.getElementById('theme-toggle').addEventListener('click',cycleTheme);
   document.getElementById('new-song-btn').addEventListener('click',newSong);
   document.getElementById('cta-new-song').addEventListener('click',newSong);
   document.getElementById('cta-demo').addEventListener('click',loadDemo);
   document.getElementById('sidebar-toggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.contains('open')?closeSidebar():openSidebar()});
+  document.getElementById('sidebar-collapse-btn')?.addEventListener('click',()=>{
+    const isCollapsed=document.getElementById('sidebar').classList.contains('collapsed');
+    isCollapsed?expandSidebar():collapseSidebar();
+  });
+  document.getElementById('sidebar-reopen')?.addEventListener('click',expandSidebar);
+  document.getElementById('sidebar-reopen')?.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();expandSidebar();}
+  });
+
   document.getElementById('sidebar-overlay').addEventListener('click',closeSidebar);
   document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{btn.addEventListener('click',()=>{showView(btn.dataset.view);if(window.innerWidth<=768)closeSidebar()})});
   document.getElementById('search-input').addEventListener('input', e => {
