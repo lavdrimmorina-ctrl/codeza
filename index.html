@@ -1906,8 +1906,9 @@ function listenForSWUpdates() {
 
 /* ── Settings panel ─────────────────────────────────────── */
 function openSettings() {
-  state.settingsOpen = true;
   const panel = document.getElementById('settings-panel');
+  if (!panel) { console.warn('[Codeza] settings-panel not found'); return; }
+  state.settingsOpen = true;
   panel.classList.add('open');
   // Highlight current theme
   document.querySelectorAll('.theme-opt').forEach(btn => {
@@ -2065,6 +2066,17 @@ async function boot(){
   document.getElementById('sidebar-overlay').addEventListener('click',closeSidebar);
   document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{btn.addEventListener('click',()=>{showView(btn.dataset.view);if(window.innerWidth<=768)closeSidebar()})});
   document.getElementById('search-input').addEventListener('input',e=>{state.searchQuery=e.target.value;refreshSongs()});
+  // Settings — bound early so nothing async can block it
+  document.getElementById('settings-btn').addEventListener('click', openSettings);
+  document.getElementById('settings-close-btn')?.addEventListener('click', closeSettings);
+  document.getElementById('settings-backdrop')?.addEventListener('click', closeSettings);
+  // Shortcuts
+  document.getElementById('shortcuts-help-btn')?.addEventListener('click', openShortcuts);
+  document.getElementById('shortcuts-close-btn')?.addEventListener('click', closeShortcuts);
+  document.getElementById('shortcuts-overlay')?.addEventListener('click', function(e){
+    if(e.target===document.getElementById('shortcuts-overlay'))closeShortcuts();
+  });
+
   // settings-btn wired in Phase 6 boot
   document.getElementById('install-btn')?.addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();const r=await deferredPrompt.userChoice;if(r.outcome==='accepted')showToast('Codéza installed!');deferredPrompt=null;document.getElementById('install-banner').classList.remove('visible')}});
   document.getElementById('install-dismiss')?.addEventListener('click',()=>document.getElementById('install-banner').classList.remove('visible'));
@@ -2200,10 +2212,7 @@ async function boot(){
     document.getElementById('update-banner').classList.remove('visible');
   });
 
-  // Settings panel
-  document.getElementById('settings-btn').addEventListener('click', openSettings);
-  document.getElementById('settings-close-btn')?.addEventListener('click', closeSettings);
-  document.getElementById('settings-backdrop')?.addEventListener('click', closeSettings);
+  // settings-btn bound early in boot (see below)
 
   // Theme picker in settings
   document.querySelectorAll('.theme-opt').forEach(btn => {
@@ -2227,12 +2236,7 @@ async function boot(){
     if (this.files && this.files[0]) { importSongs(this.files[0]); this.value = ''; }
   });
 
-  // Shortcuts overlay
-  document.getElementById('shortcuts-help-btn')?.addEventListener('click', openShortcuts);
-  document.getElementById('shortcuts-close-btn')?.addEventListener('click', closeShortcuts);
-  document.getElementById('shortcuts-overlay')?.addEventListener('click', e => {
-    if (e.target === document.getElementById('shortcuts-overlay')) closeShortcuts();
-  });
+  // Shortcuts overlay — bound early in boot()
 
   // Focus traps
   trapFocus('#settings-drawer');
