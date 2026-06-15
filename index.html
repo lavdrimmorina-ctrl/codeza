@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
+  <meta name="description" content="Codeza - A minimalist digital manuscript for musicians." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Codéza" />
+  <title>Codéza</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-apple-touch.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --bg-primary:#faf9f7;--bg-secondary:#f2f0ed;--bg-tertiary:#e8e6e2;--bg-card:#ffffff;
+      --text-primary:#1a1917;--text-secondary:#5c5a56;--text-tertiary:#9b9893;
+      --border-subtle:rgba(26,25,23,0.08);--border-default:rgba(26,25,23,0.14);--border-strong:rgba(26,25,23,0.22);
+      --accent:#1a1917;--accent-soft:rgba(26,25,23,0.06);--accent-muted:rgba(26,25,23,0.12);
+      --destructive:#c0392b;--destructive-bg:rgba(192,57,43,0.08);
+      --chord-color:#2563a8;--chord-bg:rgba(37,99,168,0.08);
+      --shadow-sm:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+      --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
+      --font-ui:'Inter',system-ui,sans-serif;--font-lyric:'Lora',Georgia,serif;
+      --sidebar-w:300px;--topbar-h:58px;
+      --transition:220ms cubic-bezier(0.4,0,0.2,1);
+      --perf-font-size:22px;--perf-line-height:1.9;
+    }
+    [data-theme="dark"] {
+      --bg-primary:#0a0a0a;--bg-secondary:#111110;--bg-tertiary:#1a1918;--bg-card:#161614;
+      --text-primary:#f0ede8;--text-secondary:#8a877f;--text-tertiary:#4a4844;
+      --border-subtle:rgba(240,237,232,0.06);--border-default:rgba(240,237,232,0.10);--border-strong:rgba(240,237,232,0.18);
+      --accent:#f0ede8;--accent-soft:rgba(240,237,232,0.06);--accent-muted:rgba(240,237,232,0.12);
+      --destructive:#e05555;--destructive-bg:rgba(224,85,85,0.10);
+      --chord-color:#7eb3e8;--chord-bg:rgba(126,179,232,0.10);
+      --shadow-sm:0 1px 3px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2);
+      --shadow-md:0 4px 16px rgba(0,0,0,0.4),0 2px 6px rgba(0,0,0,0.2);
+    }
+    /* Performance Mode: OLED-safe palette, all themes */
+    [data-perf="true"] {
+      --bg-primary:#080808 !important;--bg-secondary:#080808 !important;
+      --bg-tertiary:#0f0f0f !important;--bg-card:#0f0f0f !important;
+      --text-primary:#f5f2ec !important;--text-secondary:#f5f2ec !important;
+      --text-tertiary:#6b6860 !important;
+      --border-subtle:rgba(245,242,236,0.05) !important;--border-default:rgba(245,242,236,0.09) !important;
+      --chord-color:#93bfee !important;--chord-bg:rgba(147,191,238,0.12) !important;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{font-family:var(--font-ui);background:var(--bg-primary);color:var(--text-primary);min-height:100dvh;overflow:hidden;transition:background var(--transition),color var(--transition);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    ::selection{background:var(--accent-muted)}
+    #app{display:flex;height:100dvh;position:relative;overflow:hidden}
+    /* Sidebar */
+    #sidebar{width:var(--sidebar-w);height:100%;display:flex;flex-direction:column;background:var(--bg-secondary);border-right:1px solid var(--border-subtle);flex-shrink:0;transition:transform var(--transition),opacity var(--transition);z-index:30}
+    .sidebar-header{height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--border-subtle);flex-shrink:0}
+    .wordmark{font-family:var(--font-lyric);font-size:17px;font-weight:400;letter-spacing:-0.01em;color:var(--text-primary);user-select:none}
+    .wordmark span{color:var(--text-tertiary)}
+    .sidebar-actions{display:flex;align-items:center;gap:2px}
+    /* Icon buttons */
+    .icon-btn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-sm);border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:background var(--transition),color var(--transition);-webkit-tap-highlight-color:transparent}
+    .icon-btn:hover{background:var(--accent-soft);color:var(--text-primary)}
+    .icon-btn:active{transform:scale(0.94)}
+    .icon-btn svg{width:17px;height:17px;stroke-width:1.7}
+    .icon-btn--lg{width:36px;height:36px}
+    .icon-btn--lg svg{width:19px;height:19px}
+    .icon-btn--destructive:hover{background:var(--destructive-bg);color:var(--destructive)}
+    /* Search */
+    .sidebar-search{padding:12px 14px;flex-shrink:0}
+    .search-wrap{position:relative;display:flex;align-items:center}
+    .search-wrap svg{position:absolute;left:10px;width:15px;height:15px;color:var(--text-tertiary);stroke-width:1.8;pointer-events:none}
+    .search-input{width:100%;height:34px;padding:0 10px 0 32px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--bg-tertiary);color:var(--text-primary);font-family:var(--font-ui);font-size:13px;outline:none;transition:border-color var(--transition),background var(--transition)}
+    .search-input::placeholder{color:var(--text-tertiary)}
+    .search-input:focus{border-color:var(--border-strong);background:var(--bg-card)}
+    /* Nav */
+    .sidebar-section{padding:0 8px 4px}
+    .sidebar-section-label{font-size:10.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary);padding:10px 10px 5px;user-select:none}
+    .nav-item{display:flex;align-items:center;gap:9px;width:100%;padding:7px 10px;border-radius:var(--radius-sm);border:none;background:transparent;color:var(--text-secondary);font-family:var(--font-ui);font-size:13.5px;font-weight:400;cursor:pointer;text-align:left;transition:background var(--transition),color var(--transition);-webkit-tap-highlight-color:transparent}
+    .nav-item svg{width:16px;height:16px;stroke-width:1.7;flex-shrink:0}
+    .nav-item:hover{background:var(--accent-soft);color:var(--text-primary)}
+    .nav-item.active{background:var(--accent-muted);color:var(--text-primary);font-weight:500}
+    .nav-item .badge{margin-left:auto;font-size:11px;color:var(--text-tertiary);font-weight:400}
+    /* Song list */
+    .song-list{flex:1;overflow-y:auto;padding:0 8px 12px;scrollbar-width:none}
+    .song-list::-webkit-scrollbar{display:none}
+    .song-item{display:flex;align-items:flex-start;width:100%;padding:9px 10px;border-radius:var(--radius-sm);border:none;background:transparent;cursor:pointer;text-align:left;transition:background var(--transition);gap:10px;-webkit-tap-highlight-color:transparent}
+    .song-item:hover{background:var(--accent-soft)}
+    .song-item.active{background:var(--accent-muted)}
+    .song-item-icon{width:30px;height:30px;border-radius:var(--radius-sm);background:var(--bg-tertiary);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .song-item-icon svg{width:14px;height:14px;stroke-width:1.6;color:var(--text-tertiary)}
+    .song-item-body{flex:1;min-width:0}
+    .song-item-title{font-size:13.5px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+    .song-item-meta{font-size:11.5px;color:var(--text-tertiary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* Sidebar footer */
+    .sidebar-footer{padding:12px 14px;border-top:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .storage-info{font-size:11.5px;color:var(--text-tertiary)}
+    /* Main */
+    #main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;min-width:0}
+    /* Topbar */
+    #topbar{height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex-shrink:0;gap:12px;transition:opacity 300ms ease}
+    .topbar-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+    .topbar-breadcrumb{font-size:14px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .topbar-breadcrumb-muted{color:var(--text-tertiary);font-weight:400}
+    .topbar-right{display:flex;align-items:center;gap:4px;flex-shrink:0}
+    .topbar-sep{width:1px;height:20px;background:var(--border-default);margin:0 4px}
+    /* Content */
+    #content{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-default) transparent}
+    #content::-webkit-scrollbar{width:5px}
+    #content::-webkit-scrollbar-track{background:transparent}
+    #content::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:3px}
+    /* Empty state */
+    .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:40px;text-align:center;user-select:none}
+    .empty-state-icon{width:56px;height:56px;border-radius:var(--radius-lg);background:var(--bg-secondary);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center}
+    .empty-state-icon svg{width:24px;height:24px;stroke-width:1.4;color:var(--text-tertiary)}
+    .empty-state h2{font-size:16px;font-weight:500;color:var(--text-primary);letter-spacing:-0.01em}
+    .empty-state p{font-size:13.5px;color:var(--text-secondary);max-width:280px;line-height:1.6}
+    /* Buttons */
+    .btn-primary{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--text-primary);color:var(--bg-primary);font-family:var(--font-ui);font-size:13.5px;font-weight:500;cursor:pointer;transition:opacity var(--transition),transform var(--transition);-webkit-tap-highlight-color:transparent}
+    .btn-primary svg{width:15px;height:15px;stroke-width:2}
+    .btn-primary:hover{opacity:0.88}
+    .btn-primary:active{transform:scale(0.97)}
+    .btn-ghost{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--border-default);background:transparent;color:var(--text-secondary);font-family:var(--font-ui);font-size:13px;font-weight:400;cursor:pointer;transition:background var(--transition),color var(--transition),border-color var(--transition);-webkit-tap-highlight-color:transparent}
+    .btn-ghost:hover{background:var(--accent-soft);color:var(--text-primary);border-color:var(--border-strong)}
+    .btn-ghost svg{width:14px;height:14px;stroke-width:1.8}
+    .btn-danger{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--radius-sm);border:1px solid transparent;background:var(--destructive-bg);color:var(--destructive);font-family:var(--font-ui);font-size:13px;font-weight:500;cursor:pointer;transition:background var(--transition);-webkit-tap-highlight-color:transparent}
+    .btn-danger:hover{background:rgba(192,57,43,0.16)}
+    .btn-danger svg{width:14px;height:14px;stroke-width:1.8}
+    /* Home view */
+    .home-view{max-width:620px;margin:0 auto;padding:56px 32px 80px}
+    .home-greeting{font-family:var(--font-lyric);font-size:28px;font-weight:400;color:var(--text-primary);letter-spacing:-0.02em;line-height:1.25;margin-bottom:8px}
+    .home-sub{font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:40px}
+    .home-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:40px}
+    .stat-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;transition:border-color var(--transition)}
+    .stat-card:hover{border-color:var(--border-default)}
+    .stat-card-label{font-size:11.5px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px}
+    .stat-card-value{font-family:var(--font-lyric);font-size:26px;font-weight:400;color:var(--text-primary);letter-spacing:-0.02em;line-height:1}
+    .stat-card-detail{font-size:12px;color:var(--text-tertiary);margin-top:5px}
+    .divider{height:1px;background:var(--border-subtle);margin:32px 0}
+    .section-title{font-size:11.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:14px}
+    .recent-grid{display:grid;gap:8px}
+    .recent-card{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);cursor:pointer;transition:border-color var(--transition),background var(--transition);-webkit-tap-highlight-color:transparent;width:100%;text-align:left;font-family:var(--font-ui)}
+    .recent-card:hover{border-color:var(--border-default);background:var(--bg-secondary)}
+    .recent-card-icon{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--bg-secondary);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .recent-card-icon svg{width:16px;height:16px;stroke-width:1.6;color:var(--text-tertiary)}
+    .recent-card-body{flex:1;min-width:0}
+    .recent-card-title{font-size:14px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .recent-card-meta{font-size:12px;color:var(--text-tertiary);margin-top:2px}
+    .recent-card-arrow svg{width:14px;height:14px;stroke-width:1.8;color:var(--text-tertiary)}
+    /* Sidebar overlay */
+    #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:29;opacity:0;transition:opacity var(--transition);backdrop-filter:blur(2px)}
+    /* Toast */
+    #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--text-primary);color:var(--bg-primary);padding:10px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:400;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 240ms ease,transform 240ms ease;z-index:200;box-shadow:var(--shadow-md)}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    /* Install banner */
+    #install-banner{display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 18px;background:var(--bg-secondary);border-bottom:1px solid var(--border-subtle);font-size:13px;color:var(--text-secondary)}
+    #install-banner.visible{display:flex}
+    #install-banner strong{color:var(--text-primary);font-weight:500}
+    .banner-actions{display:flex;gap:8px}
+    /* Editor/Viewer */
+    #view-song{display:none;flex-direction:column;height:100%}
+    .song-pane{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-default) transparent}
+    .song-pane::-webkit-scrollbar{width:5px}
+    .song-pane::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:3px}
+    .editor-wrap{max-width:680px;margin:0 auto;padding:40px 32px 80px}
+    .meta-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+    .field-group{display:flex;flex-direction:column;gap:5px}
+    .field-label{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-tertiary)}
+    .field-input{height:38px;padding:0 12px;border-radius:var(--radius-sm);border:1px solid var(--border-default);background:var(--bg-card);color:var(--text-primary);font-family:var(--font-ui);font-size:14px;outline:none;transition:border-color var(--transition)}
+    .field-input:focus{border-color:var(--border-strong)}
+    .field-input::placeholder{color:var(--text-tertiary)}
+    .title-input{height:auto;padding:8px 12px;font-family:var(--font-lyric);font-size:26px;font-weight:400;letter-spacing:-0.02em;line-height:1.3;border:1px solid transparent;background:transparent;color:var(--text-primary);width:100%;outline:none;border-radius:var(--radius-sm);transition:border-color var(--transition),background var(--transition)}
+    .title-input:hover{border-color:var(--border-subtle);background:var(--bg-card)}
+    .title-input:focus{border-color:var(--border-default);background:var(--bg-card)}
+    .title-input::placeholder{color:var(--text-tertiary)}
+    .format-toolbar{display:flex;align-items:center;gap:4px;padding:6px 8px;background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);margin-bottom:14px;flex-wrap:wrap}
+    .fmt-btn{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:var(--radius-sm);border:none;background:transparent;color:var(--text-secondary);font-family:var(--font-ui);font-size:12px;font-weight:500;cursor:pointer;transition:background var(--transition),color var(--transition);white-space:nowrap;-webkit-tap-highlight-color:transparent}
+    .fmt-btn:hover{background:var(--accent-muted);color:var(--text-primary)}
+    .fmt-btn svg{width:13px;height:13px;stroke-width:2;flex-shrink:0}
+    .fmt-sep{width:1px;height:18px;background:var(--border-default);margin:0 2px}
+    .body-textarea{width:100%;min-height:420px;padding:16px;border-radius:var(--radius-md);border:1px solid var(--border-subtle);background:var(--bg-card);color:var(--text-primary);font-family:var(--font-lyric);font-size:16px;line-height:1.8;resize:none;outline:none;transition:border-color var(--transition);overflow:hidden}
+    .body-textarea:focus{border-color:var(--border-default)}
+    .body-textarea::placeholder{color:var(--text-tertiary);font-style:italic}
+    .hint-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 0 0;border-top:1px solid var(--border-subtle);margin-top:12px}
+    .hint-label{font-size:11.5px;color:var(--text-tertiary)}
+    .syntax-chip{font-family:var(--font-ui);font-size:11.5px;padding:2px 8px;border-radius:4px;background:var(--bg-secondary);border:1px solid var(--border-subtle);color:var(--text-secondary)}
+    .syntax-chip.chord{background:var(--chord-bg);border-color:transparent;color:var(--chord-color)}
+    /* Lyric viewer */
+    .lyric-wrap{max-width:700px;margin:0 auto;padding:40px 32px 100px}
+    .lyric-title{font-family:var(--font-lyric);font-size:32px;font-weight:400;letter-spacing:-0.02em;color:var(--text-primary);line-height:1.2;margin-bottom:6px}
+    .lyric-artist{font-size:14px;color:var(--text-secondary);margin-bottom:4px}
+    .lyric-meta-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;margin-bottom:36px}
+    .lyric-chip{font-size:11.5px;padding:3px 10px;border-radius:20px;border:1px solid var(--border-default);color:var(--text-secondary);background:transparent}
+    .lyric-section{margin-bottom:32px}
+    .lyric-section-label{font-size:10.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+    .lyric-section-label::after{content:'';flex:1;height:1px;background:var(--border-subtle)}
+    .lyric-line{font-family:var(--font-lyric);font-size:18px;line-height:1.75;color:var(--text-primary);white-space:pre-wrap;word-break:break-word}
+    .lyric-line.empty{height:10px}
+    .chord-token{font-family:var(--font-ui);font-size:12px;font-weight:600;color:var(--chord-color);background:var(--chord-bg);padding:1px 5px;border-radius:3px;vertical-align:1px;margin:0 1px;letter-spacing:0.02em;white-space:nowrap}
+    /* Delete modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:150;display:none;align-items:center;justify-content:center;padding:24px}
+    .modal-backdrop.open{display:flex}
+    .modal-card{background:var(--bg-card);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:28px;max-width:360px;width:100%;box-shadow:var(--shadow-md)}
+    .modal-title{font-size:16px;font-weight:500;color:var(--text-primary);margin-bottom:8px}
+    .modal-body{font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:24px}
+    .modal-actions{display:flex;justify-content:flex-end;gap:8px}
+    .unsaved-dot{width:6px;height:6px;border-radius:50%;background:var(--text-tertiary);display:inline-block;margin-left:6px;flex-shrink:0;opacity:0;transition:opacity var(--transition)}
+    .unsaved-dot.visible{opacity:1}
+    .word-count{font-size:12px;color:var(--text-tertiary);margin-top:8px;text-align:right}
+
+    /* ===== PHASE 3: PERFORMANCE MODE ===== */
+    #perf-overlay{position:fixed;inset:0;z-index:120;background:var(--bg-primary);display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity 380ms cubic-bezier(0.4,0,0.2,1);overflow:hidden}
+    #perf-overlay.entering{opacity:1;pointer-events:all}
+    body.perf-active{overflow:hidden}
+    /* HUD */
+    #perf-hud{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:60px;flex-shrink:0;opacity:1;transition:opacity 400ms ease,transform 400ms ease}
+    #perf-hud.hidden{opacity:0;pointer-events:none;transform:translateY(-8px)}
+    .perf-hud-left{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+    .perf-song-title{font-family:var(--font-lyric);font-size:16px;font-weight:400;color:var(--text-primary);letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .perf-song-meta{font-size:12px;color:var(--text-tertiary);display:flex;gap:10px}
+    .perf-hud-right{display:flex;align-items:center;gap:4px;flex-shrink:0}
+    /* Controls bar */
+    #perf-controls{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:68px;flex-shrink:0;border-top:1px solid var(--border-subtle);gap:16px;opacity:1;transition:opacity 400ms ease,transform 400ms ease}
+    #perf-controls.hidden{opacity:0;pointer-events:none;transform:translateY(8px)}
+    /* Font stepper */
+    .font-stepper{display:flex;align-items:center;border:1px solid var(--border-default);border-radius:var(--radius-sm);overflow:hidden}
+    .font-stepper-btn{display:flex;align-items:center;justify-content:center;width:36px;height:34px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:background var(--transition),color var(--transition);-webkit-tap-highlight-color:transparent}
+    .font-stepper-btn:hover{background:var(--accent-soft);color:var(--text-primary)}
+    .font-stepper-btn:active{background:var(--accent-muted)}
+    .font-stepper-btn svg{width:14px;height:14px;stroke-width:2}
+    .font-stepper-val{width:42px;text-align:center;font-size:13px;font-weight:500;color:var(--text-primary);border-left:1px solid var(--border-subtle);border-right:1px solid var(--border-subtle);padding:0 4px;line-height:34px;user-select:none}
+    .perf-controls-right{display:flex;align-items:center;gap:6px}
+    .perf-badge{font-family:var(--font-ui);font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--border-default);color:var(--text-secondary);background:transparent;white-space:nowrap;letter-spacing:0.02em}
+    /* Perf scroll area */
+    #perf-scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:pointer}
+    #perf-scroll-area::-webkit-scrollbar{display:none}
+    /* Perf lyric wrap */
+    #perf-lyric-wrap{max-width:820px;margin:0 auto;padding:24px 48px 120px}
+    #perf-lyric-wrap .lyric-title{font-size:28px;margin-bottom:4px}
+    #perf-lyric-wrap .lyric-artist{font-size:15px;margin-bottom:20px}
+    #perf-lyric-wrap .lyric-meta-chips{margin-bottom:28px}
+    #perf-lyric-wrap .lyric-section{margin-bottom:36px}
+    #perf-lyric-wrap .lyric-section-label{font-size:11px;letter-spacing:0.14em;margin-bottom:12px}
+    #perf-lyric-wrap .lyric-line{font-size:var(--perf-font-size);line-height:var(--perf-line-height);letter-spacing:-0.01em}
+    #perf-lyric-wrap .lyric-line.empty{height:calc(var(--perf-font-size) * 0.6)}
+    #perf-lyric-wrap .chord-token{font-size:calc(var(--perf-font-size) * 0.55)}
+    /* Progress bar */
+    #perf-progress{position:absolute;bottom:0;left:0;height:2px;width:0%;background:var(--text-primary);opacity:0.25;transition:width 200ms linear;pointer-events:none}
+    /* Wake indicator */
+    .wake-indicator{width:7px;height:7px;border-radius:50%;background:var(--text-tertiary);flex-shrink:0;transition:background var(--transition)}
+    .wake-indicator.active{background:#22c55e}
+    /* Exit button */
+    .perf-exit-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);border:1px solid var(--border-default);background:transparent;color:var(--text-secondary);font-family:var(--font-ui);font-size:13px;cursor:pointer;transition:background var(--transition),color var(--transition);-webkit-tap-highlight-color:transparent;white-space:nowrap}
+    .perf-exit-btn:hover{background:var(--accent-soft);color:var(--text-primary)}
+    .perf-exit-btn svg{width:15px;height:15px;stroke-width:1.8}
+    /* Perform button */
+    .btn-perform{display:inline-flex;align-items:center;gap:7px;padding:7px 16px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--text-primary);color:var(--bg-primary);font-family:var(--font-ui);font-size:13px;font-weight:500;cursor:pointer;transition:opacity var(--transition),transform var(--transition);-webkit-tap-highlight-color:transparent;white-space:nowrap}
+    .btn-perform:hover{opacity:0.88}
+    .btn-perform:active{transform:scale(0.97)}
+    .btn-perform svg{width:14px;height:14px;stroke-width:2}
+    /* Responsive */
+    @media(max-width:768px){
+      :root{--sidebar-w:280px}
+      #sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%)}
+      #sidebar.open{transform:translateX(0);box-shadow:var(--shadow-md)}
+      #sidebar-overlay.open{display:block;opacity:1}
+      #topbar{padding:0 12px}
+      .home-view{padding:36px 20px 60px}
+      .home-greeting{font-size:22px}
+      .editor-wrap,.lyric-wrap{padding:24px 18px 60px}
+      .meta-row{grid-template-columns:1fr}
+      .title-input{font-size:22px}
+      .lyric-title{font-size:26px}
+      .lyric-line{font-size:16px}
+      .fmt-btn{padding:4px 7px;font-size:11.5px}
+      #perf-lyric-wrap{padding:16px 24px 100px}
+      #perf-hud{padding:0 16px}
+      #perf-controls{padding:0 16px}
+      :root{--perf-font-size:20px}
+    }
+    @media(min-width:768px) and (max-width:1100px){:root{--sidebar-w:260px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0ms!important}}
+  </style>
+</head>
+<body>
+
+<div id="install-banner" role="banner">
+  <span>Add <strong>Codéza</strong> to your home screen for offline access.</span>
+  <div class="banner-actions">
+    <button class="btn-ghost" id="install-dismiss" style="padding:5px 12px;font-size:12px;">Dismiss</button>
+    <button class="btn-primary" id="install-btn" style="padding:6px 14px;font-size:12px;">
+      <i data-lucide="download" style="width:13px;height:13px;"></i>Install
+    </button>
+  </div>
+</div>
+
+<div id="app">
+  <div id="sidebar-overlay" aria-hidden="true"></div>
+  <aside id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-header">
+      <span class="wordmark">Codéza<span>.</span></span>
+      <div class="sidebar-actions">
+        <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme"><i data-lucide="moon"></i></button>
+        <button class="icon-btn" id="new-song-btn" aria-label="New song (Cmd N)"><i data-lucide="plus"></i></button>
+      </div>
+    </div>
+    <div class="sidebar-search">
+      <div class="search-wrap">
+        <i data-lucide="search"></i>
+        <input type="search" class="search-input" placeholder="Search songs..." id="search-input" aria-label="Search songs" />
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Library</div>
+      <button class="nav-item active" data-view="home"><i data-lucide="layout-grid"></i>Overview<span class="badge" id="badge-songs">0</span></button>
+      <button class="nav-item" data-view="setlists"><i data-lucide="list-music"></i>Setlists<span class="badge">-</span></button>
+    </div>
+    <div class="sidebar-section" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+      <div class="sidebar-section-label">Songs</div>
+      <div class="song-list" id="song-list" role="list">
+        <div class="empty-state" id="song-list-empty" style="height:auto;padding:20px 10px;gap:8px;">
+          <div class="empty-state-icon" style="width:38px;height:38px;"><i data-lucide="music-2" style="width:18px;height:18px;"></i></div>
+          <p style="font-size:12.5px;text-align:center;color:var(--text-tertiary);line-height:1.5;">Your songs will appear here.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <span class="storage-info" id="storage-info">IndexedDB ready</span>
+      <button class="icon-btn" id="settings-btn" aria-label="Settings"><i data-lucide="settings"></i></button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <header id="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn icon-btn--lg" id="sidebar-toggle" aria-label="Toggle sidebar" style="display:none;"><i data-lucide="panel-left"></i></button>
+        <span class="topbar-breadcrumb" id="topbar-title"><span class="topbar-breadcrumb-muted">Overview</span></span>
+        <span class="unsaved-dot" id="unsaved-dot" aria-label="Unsaved changes"></span>
+      </div>
+      <div class="topbar-right" id="topbar-actions"></div>
+    </header>
+    <div id="content">
+      <section id="view-home" class="home-view" aria-label="Overview">
+        <h1 class="home-greeting">Your stage manuscript.</h1>
+        <p class="home-sub">Add songs, build setlists, and perform with confidence - all offline, always.</p>
+        <div class="home-cards">
+          <div class="stat-card"><div class="stat-card-label">Songs</div><div class="stat-card-value" id="stat-songs">0</div><div class="stat-card-detail">in your library</div></div>
+          <div class="stat-card"><div class="stat-card-label">Setlists</div><div class="stat-card-value" id="stat-setlists">0</div><div class="stat-card-detail">ready to perform</div></div>
+          <div class="stat-card"><div class="stat-card-label">Storage</div><div class="stat-card-value" id="stat-storage">-</div><div class="stat-card-detail">used locally</div></div>
+        </div>
+        <div id="recent-section" style="display:none;"><div class="divider"></div><div class="section-title">Recent</div><div class="recent-grid" id="recent-grid"></div></div>
+        <div id="home-empty" class="empty-state" style="height:auto;padding:48px 0 0;align-items:flex-start;text-align:left;">
+          <div class="empty-state-icon"><i data-lucide="notebook-pen"></i></div>
+          <h2 style="font-family:var(--font-lyric);font-size:20px;font-weight:400;letter-spacing:-0.01em;">Nothing here yet.</h2>
+          <p>Add your first song and it will live offline on this device - no account needed.</p>
+          <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;">
+            <button class="btn-primary" id="cta-new-song"><i data-lucide="plus"></i>Add first song</button>
+            <button class="btn-ghost" id="cta-demo"><i data-lucide="sparkles"></i>Load demo songs</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-song" aria-label="Song">
+        <div id="editor-mode" class="song-pane" style="display:none;">
+          <div class="editor-wrap">
+            <input type="text" class="title-input" id="editor-title" placeholder="Song title..." autocomplete="off" spellcheck="false" aria-label="Song title" />
+            <div class="meta-row" style="margin-top:16px;">
+              <div class="field-group"><label class="field-label" for="editor-artist">Artist</label><input type="text" class="field-input" id="editor-artist" placeholder="Artist name" autocomplete="off" /></div>
+              <div class="field-group"><label class="field-label" for="editor-key">Key</label><input type="text" class="field-input" id="editor-key" placeholder="e.g. Am, G, F#" autocomplete="off" /></div>
+            </div>
+            <div class="meta-row">
+              <div class="field-group"><label class="field-label" for="editor-bpm">BPM</label><input type="number" class="field-input" id="editor-bpm" placeholder="e.g. 120" min="20" max="300" /></div>
+              <div class="field-group"><label class="field-label" for="editor-tags">Tags</label><input type="text" class="field-input" id="editor-tags" placeholder="rock, ballad..." autocomplete="off" /></div>
+            </div>
+            <div class="format-toolbar" role="toolbar">
+              <button class="fmt-btn" data-insert="# Verse"><i data-lucide="align-left"></i>Verse</button>
+              <button class="fmt-btn" data-insert="# Chorus"><i data-lucide="repeat-2"></i>Chorus</button>
+              <button class="fmt-btn" data-insert="# Bridge"><i data-lucide="git-branch"></i>Bridge</button>
+              <button class="fmt-btn" data-insert="# Pre-Chorus"><i data-lucide="chevrons-up"></i>Pre-Chorus</button>
+              <button class="fmt-btn" data-insert="# Outro"><i data-lucide="log-out"></i>Outro</button>
+              <div class="fmt-sep"></div>
+              <button class="fmt-btn" id="fmt-chord"><i data-lucide="music"></i>Chord</button>
+              <div class="fmt-sep"></div>
+              <button class="fmt-btn" id="fmt-clear" style="color:var(--text-tertiary)"><i data-lucide="eraser"></i>Clear</button>
+            </div>
+            <textarea class="body-textarea" id="editor-body" placeholder="Start writing your lyrics here...
+
+# Verse 1
+These are your verse lyrics
+
+# Chorus
+[Am]Here is a [F]chord annotation
+[C]Placed inline [G]with the lyric" aria-label="Song lyrics" spellcheck="true"></textarea>
+            <div class="word-count" id="word-count">0 words</div>
+            <div class="hint-strip">
+              <span class="hint-label">Syntax:</span>
+              <span class="syntax-chip"># Section name</span>
+              <span class="syntax-chip chord">[Am]</span>
+              <span class="syntax-chip" style="font-style:italic;">*italics*</span>
+              <span class="syntax-chip" style="font-weight:600;">**bold**</span>
+            </div>
+          </div>
+        </div>
+        <div id="viewer-mode" class="song-pane" style="display:none;">
+          <div class="lyric-wrap" id="lyric-render"></div>
+        </div>
+      </section>
+
+      <section id="view-setlists" style="display:none;" aria-label="Setlists">
+        <div class="empty-state" style="height:calc(100dvh - var(--topbar-h));">
+          <div class="empty-state-icon"><i data-lucide="list-music"></i></div>
+          <h2>Setlists - Phase 5</h2>
+          <p>Group your songs into setlists and swipe through them on stage.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- PERFORMANCE OVERLAY (covers everything) -->
+<div id="perf-overlay" role="dialog" aria-modal="true" aria-label="Performance mode">
+  <div id="perf-hud">
+    <div class="perf-hud-left">
+      <span class="perf-song-title" id="perf-title">-</span>
+      <div class="perf-song-meta">
+        <span id="perf-meta-artist"></span>
+        <span id="perf-meta-key"></span>
+        <span id="perf-meta-bpm"></span>
+      </div>
+    </div>
+    <div class="perf-hud-right">
+      <span class="wake-indicator" id="wake-indicator" title="Screen wake lock"></span>
+      <button class="perf-exit-btn" id="perf-exit-btn" aria-label="Exit performance mode">
+        <i data-lucide="x"></i>Exit
+      </button>
+    </div>
+  </div>
+
+  <div id="perf-scroll-area" aria-label="Tap to show or hide controls">
+    <div id="perf-lyric-wrap"></div>
+  </div>
+  <div id="perf-progress" aria-hidden="true"></div>
+
+  <div id="perf-controls">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:12px;color:var(--text-tertiary);white-space:nowrap;">Font size</span>
+      <div class="font-stepper">
+        <button class="font-stepper-btn" id="font-decrease" aria-label="Decrease font size"><i data-lucide="minus"></i></button>
+        <span class="font-stepper-val" id="font-val">22</span>
+        <button class="font-stepper-btn" id="font-increase" aria-label="Increase font size"><i data-lucide="plus"></i></button>
+      </div>
+    </div>
+    <div>
+      <button class="btn-ghost" id="perf-autoscroll-btn" style="font-size:13px;padding:7px 14px;">
+        <i data-lucide="play"></i>Auto-scroll
+      </button>
+    </div>
+    <div class="perf-controls-right">
+      <button class="icon-btn icon-btn--lg" id="perf-theme-toggle" aria-label="Toggle theme in performance mode"><i data-lucide="sun"></i></button>
+      <span id="perf-chip-key" class="perf-badge" style="display:none;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="delete-modal" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <div class="modal-title">Delete this song?</div>
+    <div class="modal-body" id="modal-body">This action cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modal-cancel">Cancel</button>
+      <button class="btn-danger" id="modal-confirm"><i data-lucide="trash-2"></i>Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ── Breadcrumb helpers (avoid template literals in deep callbacks) ── */
+const BREAD_SONGS = '<span class="topbar-breadcrumb-muted">Songs</span>'
+  + '<span style="color:var(--text-tertiary);margin:0 6px;">/</span>';
+const BREAD_OVERVIEW  = BREAD_OVERVIEW;
+const BREAD_SETLISTS  = BREAD_SETLISTS;
+function songBreadcrumb(title){ return BREAD_SONGS + esc(title || 'New song'); }
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+let db=null;
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('codeza-db',1);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('songs')){const s=d.createObjectStore('songs',{keyPath:'id'});s.createIndex('updatedAt','updatedAt');s.createIndex('title','title')}if(!d.objectStoreNames.contains('setlists'))d.createObjectStore('setlists',{keyPath:'id'});if(!d.objectStoreNames.contains('settings'))d.createObjectStore('settings',{keyPath:'key'})};r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=()=>rej(r.error)})}
+function txn(s,m='readonly'){return db.transaction(s,m).objectStore(s)}
+function getAllSongs(){return new Promise((res,rej)=>{const r=txn('songs').getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function putSong(s){return new Promise((res,rej)=>{const r=txn('songs','readwrite').put(s);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function delSong(id){return new Promise((res,rej)=>{const r=txn('songs','readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function getSetting(k){return new Promise(res=>{const r=txn('settings').get(k);r.onsuccess=()=>res(r.result?.value??null);r.onerror=()=>res(null)})}
+function putSetting(k,v){return new Promise((res,rej)=>{const r=txn('settings','readwrite').put({key:k,value:v});r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+const state={songs:[],currentView:'home',currentSongId:null,editMode:false,unsaved:false,theme:'system',searchQuery:'',deleteTarget:null,perfMode:false,perfFontSize:22,hudVisible:true};
+const FONT_MIN=14,FONT_MAX=42,FONT_STEP=2;
+function getSystemTheme(){return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+function applyTheme(t){
+  const r=t==='system'?getSystemTheme():t;
+  document.documentElement.setAttribute('data-theme',r);
+  ['#theme-toggle [data-lucide]','#perf-theme-toggle [data-lucide]'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.setAttribute('data-lucide',r==='dark'?'sun':'moon')});
+  refreshLucide();
+}
+function cycleTheme(){const r=state.theme==='system'?getSystemTheme():state.theme;state.theme=r==='dark'?'light':'dark';putSetting('theme',state.theme);applyTheme(state.theme);showToast(state.theme==='dark'?'Dark mode':'Light mode')}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(state.theme==='system')applyTheme('system')});
+let toastTimer=null;
+function showToast(msg,dur=2400){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),dur)}
+function refreshLucide(){if(window.lucide)window.lucide.createIcons()}
+async function updateStorageInfo(){if(navigator.storage&&navigator.storage.estimate){const{usage}=await navigator.storage.estimate();const kb=Math.round((usage||0)/1024);const d=kb>1024?`${(kb/1024).toFixed(1)} MB`:`${kb} KB`;const el=document.getElementById('stat-storage');if(el)el.textContent=d;const info=document.getElementById('storage-info');if(info)info.textContent=`${d} stored`}}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function formatRelative(date){const diff=Date.now()-date.getTime();const m=Math.floor(diff/60000);if(m<1)return'just now';if(m<60)return`${m}m ago`;const h=Math.floor(m/60);if(h<24)return`${h}h ago`;const d=Math.floor(h/24);if(d<7)return`${d}d ago`;return date.toLocaleDateString('en',{month:'short',day:'numeric'})}
+function genId(){return`${Date.now()}-${Math.random().toString(36).slice(2,9)}`}
+function wordCount(s){return s.trim().split(/\s+/).filter(w=>w.length>0).length}
+function renderLyrics(body){
+  const lines=body.split('\n');const sections=[];let cur=null;
+  lines.forEach(raw=>{if(/^#{1,3}\s+(.+)/.test(raw)){if(cur)sections.push(cur);cur={label:raw.replace(/^#{1,3}\s+/,'').trim(),lines:[]}}else{if(!cur)cur={label:null,lines:[]};cur.lines.push(raw)}});
+  if(cur)sections.push(cur);
+  function trimLines(ls){let s=0,e=ls.length-1;while(s<=e&&!ls[s].trim())s++;while(e>=s&&!ls[e].trim())e--;return ls.slice(s,e+1)}
+  function tok(line){let s=esc(line);s=s.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');s=s.replace(/\*(.+?)\*/g,'<em>$1</em>');s=s.replace(/\[([A-Ga-g][^\]]*)\]/g,'<span class="chord-token">$1</span>');return s}
+  let html='';
+  sections.forEach(sec=>{
+    html+='<div class="lyric-section">';
+    if(sec.label)html+='<div class="lyric-section-label">'+esc(sec.label)+'</div>';
+    trimLines(sec.lines).forEach(line=>{html+=line.trim()?'<div class="lyric-line">'+tok(line)+'</div>':'<div class="lyric-line empty"></div>'});
+    html+='</div>';
+  });
+  return html;
+}
+function buildLyricHTML(song){
+  let chips='';
+  if(song.key)chips+='<span class="lyric-chip">'+esc(song.key)+'</span>';
+  if(song.bpm)chips+='<span class="lyric-chip">'+esc(song.bpm)+' BPM</span>';
+  if(song.tags)song.tags.split(',').map(t=>t.trim()).filter(Boolean).forEach(t=>{chips+='<span class="lyric-chip">'+esc(t)+'</span>'});
+  return'<h1 class="lyric-title">'+esc(song.title||'Untitled')+'</h1>'+(song.artist?'<div class="lyric-artist">'+esc(song.artist)+'</div>':'')+(chips?'<div class="lyric-meta-chips">'+chips+'</div>':'<div style="margin-bottom:36px;"></div>')+renderLyrics(song.body||'');
+}
+function renderSongViewer(song){const w=document.getElementById('lyric-render');if(w)w.innerHTML=buildLyricHTML(song)}
+// PERF MODE
+let wakeLock=null;
+async function requestWakeLock(){if(!('wakeLock'in navigator))return;try{wakeLock=await navigator.wakeLock.request('screen');document.getElementById('wake-indicator').classList.add('active');wakeLock.addEventListener('release',()=>{document.getElementById('wake-indicator').classList.remove('active');wakeLock=null})}catch(e){}}
+async function releaseWakeLock(){if(wakeLock){await wakeLock.release();wakeLock=null}}
+document.addEventListener('visibilitychange',async()=>{if(state.perfMode&&document.visibilityState==='visible')await requestWakeLock()});
+let hudTimer=null;
+function resetHudTimer(){showHud();clearTimeout(hudTimer);hudTimer=setTimeout(hideHud,4000)}
+function showHud(){state.hudVisible=true;document.getElementById('perf-hud').classList.remove('hidden');document.getElementById('perf-controls').classList.remove('hidden')}
+function hideHud(){state.hudVisible=false;document.getElementById('perf-hud').classList.add('hidden');document.getElementById('perf-controls').classList.add('hidden')}
+function toggleHud(){if(state.hudVisible)hideHud();else{showHud();clearTimeout(hudTimer);hudTimer=setTimeout(hideHud,4000)}}
+function applyPerfFontSize(sz){
+  state.perfFontSize=Math.min(FONT_MAX,Math.max(FONT_MIN,sz));
+  document.documentElement.style.setProperty('--perf-font-size',`${state.perfFontSize}px`);
+  const lh=state.perfFontSize>30?1.7:state.perfFontSize>24?1.85:1.95;
+  document.documentElement.style.setProperty('--perf-line-height',String(lh));
+  document.getElementById('font-val').textContent=state.perfFontSize;
+  putSetting('perfFontSize',state.perfFontSize);
+}
+function updateProgressBar(){const el=document.getElementById('perf-scroll-area');const bar=document.getElementById('perf-progress');if(!el||!bar)return;const pct=el.scrollHeight<=el.clientHeight?0:el.scrollTop/(el.scrollHeight-el.clientHeight)*100;bar.style.width=`${pct}%`}
+async function enterPerformanceMode(){
+  const song=state.songs.find(s=>s.id===state.currentSongId);
+  if(!song){showToast('Open a song first');return}
+  if(state.editMode&&state.unsaved){clearTimeout(saveTimer);await saveCurrent(true)}
+  state.perfMode=true;
+  document.getElementById('perf-title').textContent=song.title||'Untitled';
+  document.getElementById('perf-meta-artist').textContent=song.artist||'';
+  document.getElementById('perf-meta-key').textContent=song.key?`Key of ${song.key}`:'';
+  document.getElementById('perf-meta-bpm').textContent=song.bpm?`${song.bpm} BPM`:'';
+  const chip=document.getElementById('perf-chip-key');
+  if(song.key){chip.textContent=song.key;chip.style.display='inline-block'}else chip.style.display='none';
+  document.getElementById('perf-lyric-wrap').innerHTML=buildLyricHTML(song);
+  document.getElementById('perf-scroll-area').scrollTop=0;
+  applyPerfFontSize(state.perfFontSize);
+  document.documentElement.setAttribute('data-perf','true');
+  const pti=document.querySelector('#perf-theme-toggle [data-lucide]');if(pti){pti.setAttribute('data-lucide','sun');refreshLucide()}
+  const overlay=document.getElementById('perf-overlay');
+  overlay.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>overlay.classList.add('entering')));
+  document.body.classList.add('perf-active');
+  resetHudTimer();
+  await requestWakeLock();
+  refreshLucide();
+  if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{});
+}
+async function exitPerformanceMode(){
+  state.perfMode=false;clearTimeout(hudTimer);showHud();
+  const overlay=document.getElementById('perf-overlay');
+  overlay.classList.remove('entering');
+  setTimeout(()=>{overlay.style.display='none'},400);
+  document.body.classList.remove('perf-active');
+  document.documentElement.removeAttribute('data-perf');
+  applyTheme(state.theme);
+  await releaseWakeLock();
+  if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock().catch(()=>{});
+}
+// NAVIGATION
+function showView(viewId,subMode){
+  state.currentView=viewId;
+  document.getElementById('view-home').style.display='none';
+  document.getElementById('view-song').style.display='none';
+  document.getElementById('view-setlists').style.display='none';
+  if(viewId==='home'){document.getElementById('view-home').style.display='block';setTopbarTitle(BREAD_OVERVIEW);setTopbarActions('home');document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view==='home'))}
+  else if(viewId==='song'){const sv=document.getElementById('view-song');sv.style.display='flex';document.getElementById('editor-mode').style.display=subMode==='edit'?'block':'none';document.getElementById('viewer-mode').style.display=subMode==='view'?'block':'none';state.editMode=subMode==='edit';document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'))}
+  else if(viewId==='setlists'){document.getElementById('view-setlists').style.display='block';setTopbarTitle(BREAD_SETLISTS);setTopbarActions('setlists');document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view==='setlists'))}
+}
+function setTopbarTitle(html){document.getElementById('topbar-title').innerHTML=html}
+function setTopbarActions(ctx){
+  const ta=document.getElementById('topbar-actions');ta.innerHTML='';
+  if(ctx==='home'||ctx==='setlists'){const b=mkIBtn('plus','New song');b.addEventListener('click',newSong);ta.appendChild(b);return}
+  if(ctx==='view'){
+    const eb=document.createElement('button');eb.className='btn-ghost';eb.style.cssText='font-size:13px;padding:6px 14px;';eb.innerHTML='<i data-lucide="pencil" style="width:14px;height:14px;"></i> Edit';eb.addEventListener('click',switchToEdit);ta.appendChild(eb);
+    const pb=document.createElement('button');pb.className='btn-perform';pb.innerHTML='<i data-lucide="play" style="width:14px;height:14px;"></i> Perform';pb.addEventListener('click',enterPerformanceMode);ta.appendChild(pb);
+    const sep=document.createElement('div');sep.className='topbar-sep';ta.appendChild(sep);
+    const db=mkIBtn('trash-2','Delete song');db.classList.add('icon-btn--destructive');db.addEventListener('click',()=>confirmDelete(state.currentSongId));ta.appendChild(db);
+    refreshLucide();return;
+  }
+  if(ctx==='edit'){
+    const sb=document.createElement('button');sb.className='btn-primary';sb.style.cssText='font-size:13px;padding:6px 14px;';sb.innerHTML='<i data-lucide="check" style="width:14px;height:14px;"></i> Save';sb.addEventListener('click',()=>saveCurrent(false));ta.appendChild(sb);
+    const vb=document.createElement('button');vb.className='btn-ghost';vb.style.cssText='font-size:13px;padding:6px 14px;';vb.innerHTML='<i data-lucide="eye" style="width:14px;height:14px;"></i> Preview';vb.addEventListener('click',switchToView);ta.appendChild(vb);
+    const sep=document.createElement('div');sep.className='topbar-sep';ta.appendChild(sep);
+    const db=mkIBtn('trash-2','Delete song');db.classList.add('icon-btn--destructive');db.addEventListener('click',()=>confirmDelete(state.currentSongId));ta.appendChild(db);
+    refreshLucide();return;
+  }
+}
+function mkIBtn(icon,label){const b=document.createElement('button');b.className='icon-btn icon-btn--lg';b.setAttribute('aria-label',label);b.title=label;b.innerHTML=`<i data-lucide="${icon}"></i>`;return b}
+async function openSong(id){if(state.currentSongId&&state.unsaved){clearTimeout(saveTimer);await saveCurrent(true)}state.currentSongId=id;setUnsaved(false);const song=state.songs.find(s=>s.id===id);if(!song)return;highlightSidebarItem(id);updateSongTopbar(song,'view');renderSongViewer(song);showView('song','view');if(window.innerWidth<=768)closeSidebar()}
+function updateSongTopbar(song,mode){setTopbarTitle('<span class="topbar-breadcrumb-muted">Songs</span><span style="color:var(--text-tertiary);margin:0 6px;">/</span>'+esc(song.title||'Untitled'));setTopbarActions(mode,song)}
+function highlightSidebarItem(id){document.querySelectorAll('.song-item').forEach(el=>el.classList.toggle('active',el.dataset.id===id))}
+async function switchToEdit(){const song=state.songs.find(s=>s.id===state.currentSongId);if(!song)return;loadSongIntoEditor(song);showView('song','edit');updateSongTopbar(song,'edit');document.getElementById('editor-title').focus()}
+async function switchToView(){if(state.unsaved){clearTimeout(saveTimer);await saveCurrent(true)}const song=state.songs.find(s=>s.id===state.currentSongId);if(!song)return;renderSongViewer(song);showView('song','view');updateSongTopbar(song,'view')}
+async function newSong(){if(state.currentSongId&&state.unsaved){clearTimeout(saveTimer);await saveCurrent(true)}const id=genId();const now=new Date().toISOString();const song={id,title:'',artist:'',key:'',bpm:null,tags:'',body:'',createdAt:now,updatedAt:now};await putSong(song);await refreshSongs();state.currentSongId=id;setUnsaved(false);highlightSidebarItem(id);loadSongIntoEditor(song);setTopbarTitle(songBreadcrumb('New song'));setTopbarActions('edit');showView('song','edit');document.getElementById('editor-title').focus();if(window.innerWidth<=768)closeSidebar()}
+function loadSongIntoEditor(song){document.getElementById('editor-title').value=song.title||'';document.getElementById('editor-artist').value=song.artist||'';document.getElementById('editor-key').value=song.key||'';document.getElementById('editor-bpm').value=song.bpm||'';document.getElementById('editor-tags').value=song.tags||'';const b=document.getElementById('editor-body');b.value=song.body||'';autoGrowTextarea(b);updateWordCount()}
+function readEditor(){return{title:document.getElementById('editor-title').value.trim(),artist:document.getElementById('editor-artist').value.trim(),key:document.getElementById('editor-key').value.trim(),bpm:parseInt(document.getElementById('editor-bpm').value)||null,tags:document.getElementById('editor-tags').value.trim(),body:document.getElementById('editor-body').value}}
+function autoGrowTextarea(el){el.style.height='auto';el.style.height=Math.max(420,el.scrollHeight)+'px'}
+function updateWordCount(){const b=document.getElementById('editor-body').value;const w=document.getElementById('word-count');if(w){const n=wordCount(b);w.textContent=`${n} word${n!==1?'s':''}`}}
+function setUnsaved(v){state.unsaved=v;document.getElementById('unsaved-dot').classList.toggle('visible',v)}
+let saveTimer=null;
+function scheduleAutoSave(){setUnsaved(true);clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveCurrent(true),1200)}
+async function saveCurrent(silent=false){if(!state.currentSongId)return;const fields=readEditor();if(!fields.title)fields.title='Untitled';const existing=state.songs.find(s=>s.id===state.currentSongId)||{};const updated={...existing,...fields,id:state.currentSongId,updatedAt:new Date().toISOString(),createdAt:existing.createdAt||new Date().toISOString()};await putSong(updated);await refreshSongs();setUnsaved(false);if(!silent)showToast('Saved')}
+function confirmDelete(id){const song=state.songs.find(s=>s.id===id);if(!song)return;state.deleteTarget=id;document.getElementById('modal-body').textContent=`"${song.title||'Untitled'}" will be permanently removed from your device.`;document.getElementById('delete-modal').classList.add('open')}
+async function executeDelete(){const id=state.deleteTarget;if(!id)return;document.getElementById('delete-modal').classList.remove('open');await delSong(id);state.deleteTarget=null;if(state.currentSongId===id){state.currentSongId=null;setUnsaved(false)}await refreshSongs();if(!state.songs.find(s=>s.id===state.currentSongId)){showView('home');state.currentSongId=null}showToast('Song deleted')}
+async function refreshSongs(){state.songs=await getAllSongs();state.songs.sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));const filtered=state.songs.filter(s=>{const q=state.searchQuery.toLowerCase();return!q||s.title.toLowerCase().includes(q)||(s.artist||'').toLowerCase().includes(q)||(s.tags||'').toLowerCase().includes(q)});renderSongList(filtered);renderHomeStats();updateStorageInfo()}
+function renderSongList(songs){const list=document.getElementById('song-list');const empty=document.getElementById('song-list-empty');Array.from(list.querySelectorAll('.song-item')).forEach(el=>el.remove());if(!songs.length){empty.style.display='flex';return}empty.style.display='none';songs.forEach(song=>{const btn=document.createElement('button');btn.className='song-item'+(song.id===state.currentSongId?' active':'');btn.setAttribute('role','listitem');btn.setAttribute('data-id',song.id);btn.innerHTML='<div class="song-item-icon"><i data-lucide="music-2"></i></div><div class="song-item-body"><div class="song-item-title">'+esc(song.title||'Untitled')+'</div><div class="song-item-meta">'+esc(song.artist||'No artist')+(song.key?' - '+esc(song.key):'')+'</div></div>';btn.addEventListener('click',()=>openSong(song.id));list.insertBefore(btn,empty)});refreshLucide()}
+function renderHomeStats(){const c=state.songs.length;const b=document.getElementById('badge-songs');if(b)b.textContent=c;const s=document.getElementById('stat-songs');if(s)s.textContent=c;const he=document.getElementById('home-empty');const rs=document.getElementById('recent-section');if(!c){if(he)he.style.display='flex';if(rs)rs.style.display='none'}else{if(he)he.style.display='none';if(rs)rs.style.display='block';renderRecentGrid()}}
+function renderRecentGrid(){const grid=document.getElementById('recent-grid');if(!grid)return;grid.innerHTML='';state.songs.slice(0,4).forEach(song=>{const card=document.createElement('button');card.className='recent-card';card.innerHTML='<div class="recent-card-icon"><i data-lucide="music-2"></i></div><div class="recent-card-body"><div class="recent-card-title">'+esc(song.title||'Untitled')+'</div><div class="recent-card-meta">'+esc(song.artist||'No artist')+' - '+formatRelative(new Date(song.updatedAt))+'</div></div><div class="recent-card-arrow"><i data-lucide="chevron-right"></i></div>';card.addEventListener('click',()=>openSong(song.id));grid.appendChild(card)});refreshLucide()}
+const DEMO=[
+  {id:'demo-1',title:'Hallelujah',artist:'Leonard Cohen',key:'C',bpm:68,tags:'folk, ballad',body:'# Verse 1\nI\'ve heard there was a secret chord\nThat David played and it pleased the Lord\nBut you don\'t really care for music, do ya?\n\n# Pre-Chorus\nIt goes like this, the [C]fourth, the [G]fifth\nThe [Am]minor fall, the [F]major lift\nThe [G]baffled king composing [E7]Hallelujah\n\n# Chorus\n[F]Hallelujah, [Am]Hallelujah\n[F]Hallelujah, Halle[C]lu[G]jah\n\n# Verse 2\nYour faith was strong but you needed proof\nYou saw her bathing on the roof\nHer beauty and the moonlight overthrew ya',createdAt:new Date(Date.now()-864e5*3).toISOString(),updatedAt:new Date(Date.now()-864e5).toISOString()},
+  {id:'demo-2',title:'Blackbird',artist:'The Beatles',key:'G',bpm:96,tags:'acoustic, classic',body:'# Verse 1\nBlackbird singing in the dead of night\nTake these broken wings and learn to fly\nAll your life\nYou were only waiting for this moment to arise\n\n# Verse 2\nBlackbird singing in the dead of night\nTake these sunken eyes and learn to see\nAll your life\nYou were only waiting for this moment to be free\n\n# Outro\nBlackbird [G]fly, blackbird [Am7]fly\nInto the [C]light of the dark black [G]night',createdAt:new Date(Date.now()-864e5*7).toISOString(),updatedAt:new Date(Date.now()-864e5*2).toISOString()},
+  {id:'demo-3',title:'Fast Car',artist:'Tracy Chapman',key:'D',bpm:109,tags:'folk, 80s',body:'# Verse 1\nYou got a fast car\nI want a ticket to anywhere\nMaybe we make a deal\nMaybe together we can get somewhere\n\n# Chorus\nYou got a fast car\nI want to go fast enough to break away\nYou got a fast car\nI got a plan to get us out of here\n\n# Bridge\nSo I remember we were driving, driving in your car\nThe speed so fast I felt like I was drunk\nCity lights lay out before us\nAnd your arm felt nice wrapped \'round my shoulder',createdAt:new Date(Date.now()-864e5*14).toISOString(),updatedAt:new Date(Date.now()-864e5*3).toISOString()},
+];
+async function loadDemo(){for(const s of DEMO)await putSong(s);await refreshSongs();showToast('3 demo songs loaded')}
+function insertAtCursor(ta,text){const s=ta.selectionStart,e=ta.selectionEnd;const before=ta.value.substring(0,s);const prefix=before.length>0&&!before.endsWith('\n')?'\n\n':before.length===0?'':'\n\n';const ins=`${prefix}${text}\n`;ta.value=before+ins+ta.value.substring(e);const cur=s+ins.length;ta.setSelectionRange(cur,cur);ta.focus();autoGrowTextarea(ta);scheduleAutoSave()}
+function wrapChord(ta){const s=ta.selectionStart,e=ta.selectionEnd;const sel=ta.value.substring(s,e);const chord=sel.trim()||'Am';const w=`[${chord}]`;ta.value=ta.value.substring(0,s)+w+ta.value.substring(e);ta.setSelectionRange(s,s+w.length);ta.focus();scheduleAutoSave()}
+function checkSidebarToggle(){const t=document.getElementById('sidebar-toggle');if(window.innerWidth<=768){if(t)t.style.display='flex'}else{if(t)t.style.display='none';closeSidebar()}}
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open')}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('install-banner')?.classList.add('visible')});
+
+async function boot(){
+  await openDB();
+  const savedTheme=await getSetting('theme')||'system';state.theme=savedTheme;applyTheme(savedTheme);
+  const savedFont=await getSetting('perfFontSize');if(savedFont)state.perfFontSize=savedFont;
+  document.getElementById('font-val').textContent=state.perfFontSize;
+  await refreshSongs();showView('home');checkSidebarToggle();window.addEventListener('resize',checkSidebarToggle);refreshLucide();
+  document.getElementById('theme-toggle').addEventListener('click',cycleTheme);
+  document.getElementById('new-song-btn').addEventListener('click',newSong);
+  document.getElementById('cta-new-song').addEventListener('click',newSong);
+  document.getElementById('cta-demo').addEventListener('click',loadDemo);
+  document.getElementById('sidebar-toggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.contains('open')?closeSidebar():openSidebar()});
+  document.getElementById('sidebar-overlay').addEventListener('click',closeSidebar);
+  document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{btn.addEventListener('click',()=>{showView(btn.dataset.view);if(window.innerWidth<=768)closeSidebar()})});
+  document.getElementById('search-input').addEventListener('input',e=>{state.searchQuery=e.target.value;refreshSongs()});
+  document.getElementById('settings-btn').addEventListener('click',()=>showToast('Settings - coming soon'));
+  document.getElementById('install-btn')?.addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();const r=await deferredPrompt.userChoice;if(r.outcome==='accepted')showToast('Codéza installed!');deferredPrompt=null;document.getElementById('install-banner').classList.remove('visible')}});
+  document.getElementById('install-dismiss')?.addEventListener('click',()=>document.getElementById('install-banner').classList.remove('visible'));
+  ['editor-title','editor-artist','editor-key','editor-bpm','editor-tags'].forEach(function(id) {
+    document.getElementById(id).addEventListener('input', function() {
+      scheduleAutoSave();
+      if (id === 'editor-title') {
+        var v = document.getElementById('editor-title').value.trim();
+        setTopbarTitle(songBreadcrumb(v));
+      }
+    });
+  });
+  const bodyTA=document.getElementById('editor-body');
+  bodyTA.addEventListener('input',()=>{autoGrowTextarea(bodyTA);updateWordCount();scheduleAutoSave()});
+  bodyTA.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=bodyTA.selectionStart;bodyTA.value=bodyTA.value.substring(0,s)+'  '+bodyTA.value.substring(s);bodyTA.setSelectionRange(s+2,s+2)}});
+  document.querySelectorAll('.fmt-btn[data-insert]').forEach(btn=>{btn.addEventListener('click',()=>insertAtCursor(bodyTA,btn.dataset.insert))});
+  document.getElementById('fmt-chord').addEventListener('click',()=>wrapChord(bodyTA));
+  document.getElementById('fmt-clear').addEventListener('click',()=>{if(!bodyTA.value.trim())return;bodyTA.value=bodyTA.value.replace(/^#+ /gm,'').replace(/\[([^\]]+)\]/g,'$1').replace(/\*\*(.+?)\*\*/g,'$1').replace(/\*(.+?)\*/g,'$1');autoGrowTextarea(bodyTA);scheduleAutoSave();showToast('Formatting cleared')});
+  document.getElementById('modal-cancel').addEventListener('click',()=>{document.getElementById('delete-modal').classList.remove('open');state.deleteTarget=null});
+  document.getElementById('modal-confirm').addEventListener('click',executeDelete);
+  document.getElementById('delete-modal').addEventListener('click',e=>{if(e.target===document.getElementById('delete-modal')){document.getElementById('delete-modal').classList.remove('open');state.deleteTarget=null}});
+  // Perf mode bindings
+  document.getElementById('perf-exit-btn').addEventListener('click',exitPerformanceMode);
+  document.getElementById('perf-scroll-area').addEventListener('click',e=>{if(e.target.closest('button'))return;toggleHud()});
+  document.getElementById('perf-scroll-area').addEventListener('pointermove',resetHudTimer,{passive:true});
+  document.getElementById('font-decrease').addEventListener('click',()=>{applyPerfFontSize(state.perfFontSize-FONT_STEP);resetHudTimer()});
+  document.getElementById('font-increase').addEventListener('click',()=>{applyPerfFontSize(state.perfFontSize+FONT_STEP);resetHudTimer()});
+  document.getElementById('perf-theme-toggle').addEventListener('click',()=>{
+    const isPerfDark=document.documentElement.getAttribute('data-perf')==='true';
+    if(isPerfDark){document.documentElement.removeAttribute('data-perf');document.documentElement.setAttribute('data-theme','light');const i=document.querySelector('#perf-theme-toggle [data-lucide]');if(i){i.setAttribute('data-lucide','moon');refreshLucide()}showToast('Light stage')}
+    else{document.documentElement.setAttribute('data-perf','true');document.documentElement.setAttribute('data-theme','dark');const i=document.querySelector('#perf-theme-toggle [data-lucide]');if(i){i.setAttribute('data-lucide','sun');refreshLucide()}showToast('OLED dark')}
+    resetHudTimer();
+  });
+  document.getElementById('perf-autoscroll-btn').addEventListener('click',()=>{showToast('Auto-scroll - Phase 4');resetHudTimer()});
+  document.getElementById('perf-scroll-area').addEventListener('scroll',updateProgressBar,{passive:true});
+  // Keyboard
+  document.addEventListener('keydown',e=>{
+    const meta=e.metaKey||e.ctrlKey;
+    if(state.perfMode){
+      if(e.key==='Escape'){exitPerformanceMode();return}
+      if(e.key==='+'||e.key==='='){applyPerfFontSize(state.perfFontSize+FONT_STEP);resetHudTimer();return}
+      if(e.key==='-'){applyPerfFontSize(state.perfFontSize-FONT_STEP);resetHudTimer();return}
+      const sa=document.getElementById('perf-scroll-area');
+      if(e.key==='ArrowDown'){sa.scrollBy({top:120,behavior:'smooth'});resetHudTimer();e.preventDefault();return}
+      if(e.key==='ArrowUp'){sa.scrollBy({top:-120,behavior:'smooth'});resetHudTimer();e.preventDefault();return}
+      if(e.key===' '&&!e.shiftKey){sa.scrollBy({top:sa.clientHeight*0.8,behavior:'smooth'});resetHudTimer();e.preventDefault();return}
+      resetHudTimer();return;
+    }
+    if(meta&&e.key==='n'){e.preventDefault();newSong()}
+    if(meta&&e.key==='k'){e.preventDefault();document.getElementById('search-input').focus()}
+    if(meta&&e.key==='s'&&state.currentSongId&&state.editMode){e.preventDefault();saveCurrent(false)}
+    if(meta&&e.key==='Enter'&&state.currentSongId&&state.editMode){e.preventDefault();switchToView()}
+    if(e.key==='F5'&&state.currentSongId&&!state.editMode){e.preventDefault();enterPerformanceMode()}
+    if(e.key==='Escape'){if(document.getElementById('delete-modal').classList.contains('open')){document.getElementById('delete-modal').classList.remove('open');state.deleteTarget=null;return}document.getElementById('search-input').blur();closeSidebar()}
+  });
+  window.addEventListener('beforeunload',e=>{if(state.unsaved){e.preventDefault();e.returnValue=''}});
+  console.log('[Codeza] Phase 3 booted - Performance Mode active.');
+}
+boot().catch(console.error);
+})();
+</script>
+</body>
+</html>
