@@ -1519,7 +1519,7 @@ function applyPerfFontSize(sz){
   document.documentElement.style.setProperty('--perf-font-size',`${state.perfFontSize}px`);
   const lh=state.perfFontSize>30?1.7:state.perfFontSize>24?1.85:1.95;
   document.documentElement.style.setProperty('--perf-line-height',String(lh));
-  document.getElementById('font-val').textContent=state.perfFontSize;
+  const fv=document.getElementById('font-val');if(fv)fv.textContent=state.perfFontSize;
   putSetting('perfFontSize',state.perfFontSize);
 }
 function updateProgressBar(){const el=document.getElementById('perf-scroll-area');const bar=document.getElementById('perf-progress');if(!el||!bar)return;const pct=el.scrollHeight<=el.clientHeight?0:el.scrollTop/(el.scrollHeight-el.clientHeight)*100;bar.style.width=`${pct}%`}
@@ -2689,7 +2689,7 @@ async function boot(){
     const sl=document.getElementById('speed-slider');
     if(sl)sl.value=savedSpeed;
   }
-  document.getElementById('font-val').textContent=state.perfFontSize;
+  const fv=document.getElementById('font-val');if(fv)fv.textContent=state.perfFontSize;
   await refreshFolders();await refreshSongs();showView('home');checkSidebarToggle();window.addEventListener('resize',checkSidebarToggle);refreshLucide();
   document.getElementById('theme-toggle').addEventListener('click',cycleTheme);
   document.getElementById('new-song-btn').addEventListener('click',newSong);
