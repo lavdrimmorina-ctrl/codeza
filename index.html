@@ -1963,7 +1963,7 @@ async function boot(){
   document.getElementById('sidebar-overlay').addEventListener('click',closeSidebar);
   document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{btn.addEventListener('click',()=>{showView(btn.dataset.view);if(window.innerWidth<=768)closeSidebar()})});
   document.getElementById('search-input').addEventListener('input',e=>{state.searchQuery=e.target.value;refreshSongs()});
-  document.getElementById('settings-btn').addEventListener('click',()=>showToast('Settings - coming soon'));
+  // settings-btn wired in Phase 6 boot
   document.getElementById('install-btn')?.addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();const r=await deferredPrompt.userChoice;if(r.outcome==='accepted')showToast('Codéza installed!');deferredPrompt=null;document.getElementById('install-banner').classList.remove('visible')}});
   document.getElementById('install-dismiss')?.addEventListener('click',()=>document.getElementById('install-banner').classList.remove('visible'));
   ['editor-title','editor-artist','editor-key','editor-bpm','editor-tags'].forEach(function(id) {
