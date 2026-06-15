@@ -27,7 +27,7 @@ Codéza is a single-file Progressive Web App built for performers. It runs entir
 | 3 | ✅ | Performance Mode, font controls, wake lock |
 | 4 | 🔜 | Auto-scroll with speed controls |
 | 5 | 🔜 | Setlists — group songs, swipe navigation |
-| 6 | 🔜 | Polish, offline audit, install hardening |
+| 6 | ✅ | Polish, offline banner, SW updates, settings, export/import, share |
 
 ## Stack
 
@@ -48,6 +48,8 @@ Codéza is a single-file Progressive Web App built for performers. It runs entir
 | `⌘K` / `Ctrl+K` | Focus search |
 | `⌘S` / `Ctrl+S` | Save (in editor) |
 | `⌘↵` / `Ctrl+Enter` | Preview (in editor) |
+| `⌘,` / `Ctrl+,` | Open Settings |
+| `?` | Keyboard shortcuts reference |
 | `F5` | Enter Performance Mode |
 | `Esc` | Exit Performance Mode / close modal |
 | `+` / `-` | Font size (in Performance Mode) |

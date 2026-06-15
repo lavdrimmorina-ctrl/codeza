@@ -549,6 +549,270 @@
       .setlist-header h1 { font-size: 22px; }
     }
 
+
+    /* ═══ PHASE 6: POLISH ══════════════════════════════════ */
+
+    /* ── Page transition fade ────────────────────────────── */
+    #content > section {
+      animation: fadeIn 180ms ease both;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #content > section { animation: none; }
+      #perf-overlay { transition: none !important; }
+    }
+
+    /* ── Focus ring — keyboard nav ───────────────────────── */
+    :focus-visible {
+      outline: 2px solid var(--text-primary);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+    button:focus:not(:focus-visible),
+    input:focus:not(:focus-visible) { outline: none; }
+
+    /* ── Skeleton loader ─────────────────────────────────── */
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        var(--bg-tertiary) 25%,
+        var(--bg-secondary) 50%,
+        var(--bg-tertiary) 75%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.4s ease infinite;
+      border-radius: var(--radius-sm);
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .skeleton { animation: none; background: var(--bg-tertiary); }
+    }
+
+    /* ── Toast — enhanced ────────────────────────────────── */
+    #toast {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: calc(100vw - 40px);
+    }
+    #toast svg { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; }
+
+    /* ── Offline banner ──────────────────────────────────── */
+    #offline-banner {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12.5px;
+      color: var(--text-secondary);
+    }
+    #offline-banner.visible { display: flex; }
+    #offline-banner svg { width: 13px; height: 13px; stroke-width: 2; color: var(--text-tertiary); }
+
+    /* ── SW update banner ────────────────────────────────── */
+    #update-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 18px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    #update-banner.visible { display: flex; }
+    #update-banner strong { color: var(--text-primary); font-weight: 500; }
+
+    /* ── Settings panel (slide-in drawer) ────────────────── */
+    #settings-panel {
+      position: fixed;
+      inset: 0;
+      z-index: 140;
+      display: flex;
+      align-items: flex-end;
+      pointer-events: none;
+    }
+    #settings-panel.open { pointer-events: all; }
+    #settings-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: opacity 300ms ease;
+      backdrop-filter: blur(2px);
+    }
+    #settings-panel.open #settings-backdrop { opacity: 1; }
+    #settings-drawer {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      border: 1px solid var(--border-default);
+      border-bottom: none;
+      padding: 0 0 env(safe-area-inset-bottom, 0);
+      box-shadow: var(--shadow-md);
+      transform: translateY(100%);
+      transition: transform 340ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #settings-panel.open #settings-drawer { transform: translateY(0); }
+    .settings-handle {
+      width: 36px; height: 4px;
+      background: var(--border-default);
+      border-radius: 2px;
+      margin: 12px auto 0;
+    }
+    .settings-title {
+      font-size: 15px; font-weight: 600;
+      color: var(--text-primary);
+      padding: 16px 24px 4px;
+      letter-spacing: -0.01em;
+    }
+    .settings-section {
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .settings-section:last-child { border-bottom: none; }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+    }
+    .settings-row-label {
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+    .settings-row-sub {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+    .settings-btn-row {
+      display: flex;
+      gap: 8px;
+      padding: 10px 0;
+      flex-wrap: wrap;
+    }
+
+    /* ── Toggle switch ───────────────────────────────────── */
+    .toggle {
+      position: relative;
+      width: 40px; height: 22px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute; inset: 0;
+      background: var(--bg-tertiary);
+      border-radius: 11px;
+      border: 1px solid var(--border-default);
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      left: 2px; top: 2px;
+      width: 16px; height: 16px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      transition: transform var(--transition), background var(--transition);
+    }
+    .toggle input:checked + .toggle-track {
+      background: var(--text-primary);
+      border-color: var(--text-primary);
+    }
+    .toggle input:checked + .toggle-track::after {
+      transform: translateX(18px);
+      background: var(--bg-primary);
+    }
+
+    /* ── Share / Export button in topbar ─────────────────── */
+    .btn-share {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-ui); font-size: 13px; font-weight: 400;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-share:hover { background: var(--accent-soft); color: var(--text-primary); }
+    .btn-share svg { width: 14px; height: 14px; stroke-width: 1.8; }
+
+    /* ── Keyboard shortcuts overlay ──────────────────────── */
+    #shortcuts-overlay {
+      position: fixed; inset: 0; z-index: 160;
+      background: rgba(0,0,0,0.5);
+      display: none; align-items: center; justify-content: center;
+      padding: 24px; backdrop-filter: blur(4px);
+    }
+    #shortcuts-overlay.open { display: flex; }
+    #shortcuts-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      max-width: 420px; width: 100%;
+      box-shadow: var(--shadow-md);
+      max-height: 80dvh; overflow-y: auto;
+    }
+    .shortcuts-title {
+      font-family: var(--font-lyric); font-size: 20px; font-weight: 400;
+      color: var(--text-primary); margin-bottom: 20px; letter-spacing: -0.02em;
+    }
+    .shortcut-group { margin-bottom: 18px; }
+    .shortcut-group-label {
+      font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px;
+    }
+    .shortcut-row {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .shortcut-row:last-child { border-bottom: none; }
+    .shortcut-desc { font-size: 13px; color: var(--text-secondary); }
+    .shortcut-keys { display: flex; gap: 4px; flex-shrink: 0; }
+    kbd {
+      font-family: var(--font-ui); font-size: 11px;
+      padding: 2px 7px; border-radius: 4px;
+      border: 1px solid var(--border-default);
+      background: var(--bg-secondary);
+      color: var(--text-secondary); white-space: nowrap;
+    }
+
+    /* ── Song count badge on setlist perform ─────────────── */
+    .perf-setlist-label {
+      font-size: 11px; color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    /* ── Smooth page enter for perf overlay ──────────────── */
+    #perf-overlay {
+      will-change: opacity;
+    }
+
+    /* ── Import/Export area in settings ──────────────────── */
+    #import-file-input { display: none; }
+
   </style>
 </head>
 <body>
@@ -559,6 +823,23 @@
     <button class="btn-ghost" id="install-dismiss" style="padding:5px 12px;font-size:12px;">Dismiss</button>
     <button class="btn-primary" id="install-btn" style="padding:6px 14px;font-size:12px;">
       <i data-lucide="download" style="width:13px;height:13px;"></i>Install
+    </button>
+  </div>
+</div>
+
+<!-- Offline banner -->
+<div id="offline-banner" role="status" aria-live="polite">
+  <i data-lucide="wifi-off"></i>
+  You're offline — Codeza is running from cache.
+</div>
+
+<!-- SW update banner -->
+<div id="update-banner" role="status">
+  <span><strong>Update available.</strong> Reload to get the latest version.</span>
+  <div class="banner-actions">
+    <button class="btn-ghost" id="update-dismiss" style="padding:5px 12px;font-size:12px;">Later</button>
+    <button class="btn-primary" id="update-reload" style="padding:6px 14px;font-size:12px;">
+      <i data-lucide="refresh-cw" style="width:13px;height:13px;"></i>Reload
     </button>
   </div>
 </div>
@@ -811,7 +1092,8 @@ const state={songs:[],setlists:[],currentView:'home',currentSongId:null,editMode
   perfMode:false,perfFontSize:22,hudVisible:true,
   scrolling:false,scrollSpeed:4,scrollPaused:false,
   activeSetlistId:null,setlistSongIndex:0,
-  editingSetlistId:null};
+  editingSetlistId:null,
+  settingsOpen:false};
 const FONT_MIN=14,FONT_MAX=42,FONT_STEP=2;
 function getSystemTheme(){return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
 function applyTheme(t){
@@ -1047,6 +1329,7 @@ function setTopbarActions(ctx){
   if(ctx==='home'){const b=mkIBtn('plus','New song');b.addEventListener('click',newSong);ta.appendChild(b);return}if(ctx==='setlists'){const b=mkIBtn('plus','New setlist');b.addEventListener('click',createSetlist);ta.appendChild(b);return}
   if(ctx==='view'){
     const eb=document.createElement('button');eb.className='btn-ghost';eb.style.cssText='font-size:13px;padding:6px 14px;';eb.innerHTML='<i data-lucide="pencil" style="width:14px;height:14px;"></i> Edit';eb.addEventListener('click',switchToEdit);ta.appendChild(eb);
+    const shareBtn=document.createElement('button');shareBtn.className='btn-share';shareBtn.setAttribute('aria-label','Share song');shareBtn.title='Share';shareBtn.innerHTML='<i data-lucide="share-2" style="width:14px;height:14px;"></i>';shareBtn.addEventListener('click',()=>{const song=state.songs.find(s=>s.id===state.currentSongId);if(song)shareSong(song);});ta.appendChild(shareBtn);
     const pb=document.createElement('button');pb.className='btn-perform';pb.innerHTML='<i data-lucide="play" style="width:14px;height:14px;"></i> Perform';pb.addEventListener('click',enterPerformanceMode);ta.appendChild(pb);
     const sep=document.createElement('div');sep.className='topbar-sep';ta.appendChild(sep);
     const db=mkIBtn('trash-2','Delete song');db.classList.add('icon-btn--destructive');db.addEventListener('click',()=>confirmDelete(state.currentSongId));ta.appendChild(db);
@@ -1480,6 +1763,187 @@ function initPerfSwipe() {
   }, { passive: true });
 }
 
+
+/* ═══════════════════════════════════════════════════════════
+   PHASE 6: OFFLINE, SW UPDATES, SETTINGS, EXPORT/IMPORT,
+            SHARE, FOCUS TRAP, SHORTCUTS
+═══════════════════════════════════════════════════════════ */
+
+/* ── Offline detection ──────────────────────────────────── */
+function updateOnlineStatus() {
+  const banner = document.getElementById('offline-banner');
+  if (!banner) return;
+  if (navigator.onLine) banner.classList.remove('visible');
+  else                  banner.classList.add('visible');
+}
+
+/* ── SW update message ──────────────────────────────────── */
+function listenForSWUpdates() {
+  if (!navigator.serviceWorker) return;
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data && e.data.type === 'SW_UPDATED') {
+      document.getElementById('update-banner')?.classList.add('visible');
+    }
+  });
+  // Also watch for new SW waiting
+  navigator.serviceWorker.ready.then(reg => {
+    if (reg.waiting) {
+      document.getElementById('update-banner')?.classList.add('visible');
+    }
+    reg.addEventListener('updatefound', () => {
+      const nw = reg.installing;
+      if (!nw) return;
+      nw.addEventListener('statechange', () => {
+        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+          document.getElementById('update-banner')?.classList.add('visible');
+        }
+      });
+    });
+  });
+}
+
+/* ── Settings panel ─────────────────────────────────────── */
+function openSettings() {
+  state.settingsOpen = true;
+  const panel = document.getElementById('settings-panel');
+  panel.classList.add('open');
+  // Highlight current theme
+  document.querySelectorAll('.theme-opt').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === state.theme);
+    btn.style.fontWeight = btn.dataset.theme === state.theme ? '600' : '';
+    btn.style.color      = btn.dataset.theme === state.theme
+      ? 'var(--text-primary)' : '';
+  });
+  // Focus first button
+  setTimeout(() => {
+    document.getElementById('settings-close-btn')?.focus();
+  }, 320);
+}
+
+function closeSettings() {
+  state.settingsOpen = false;
+  document.getElementById('settings-panel').classList.remove('open');
+  document.getElementById('settings-btn')?.focus();
+}
+
+/* ── Focus trap ─────────────────────────────────────────── */
+function trapFocus(containerSelector) {
+  const container = document.querySelector(containerSelector);
+  if (!container) return () => {};
+  const focusable = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  const handler = e => {
+    if (e.key !== 'Tab') return;
+    const els   = [...container.querySelectorAll(focusable)].filter(el => !el.disabled);
+    if (!els.length) return;
+    const first = els[0], last = els[els.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  };
+  document.addEventListener('keydown', handler);
+  return () => document.removeEventListener('keydown', handler);
+}
+
+/* ── Export songs ────────────────────────────────────────── */
+async function exportSongs() {
+  const songs    = await getAllSongs();
+  const setlists = await getAllSetlists();
+  const payload  = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    songs,
+    setlists,
+  };
+  const json   = JSON.stringify(payload, null, 2);
+  const blob   = new Blob([json], { type: 'application/json' });
+  const url    = URL.createObjectURL(blob);
+  const a      = document.createElement('a');
+  a.href       = url;
+  a.download   = 'codeza-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported ' + songs.length + ' song' + (songs.length !== 1 ? 's' : ''), 3000);
+}
+
+/* ── Import songs ────────────────────────────────────────── */
+async function importSongs(file) {
+  try {
+    const text    = await file.text();
+    const payload = JSON.parse(text);
+    const songs   = payload.songs || (Array.isArray(payload) ? payload : []);
+    const setlists = payload.setlists || [];
+    let songCount = 0, slCount = 0;
+    for (const song of songs) {
+      if (song.id && song.title !== undefined) {
+        await putSong(song);
+        songCount++;
+      }
+    }
+    for (const sl of setlists) {
+      if (sl.id && sl.name !== undefined) {
+        await putSetlist(sl);
+        slCount++;
+      }
+    }
+    await refreshSongs();
+    await refreshSetlists();
+    const msg = 'Imported ' + songCount + ' song' + (songCount !== 1 ? 's' : '')
+      + (slCount ? ', ' + slCount + ' setlist' + (slCount !== 1 ? 's' : '') : '');
+    showToast(msg, 3500);
+  } catch (err) {
+    showToast('Import failed — invalid file', 3000);
+    console.error('[Codeza] Import error:', err);
+  }
+}
+
+/* ── Web Share API ───────────────────────────────────────── */
+async function shareSong(song) {
+  const text = (song.title || 'Untitled') + '\n'
+    + (song.artist ? 'by ' + song.artist + '\n\n' : '\n')
+    + (song.body || '');
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: song.title || 'Untitled', text });
+    } catch (e) { /* user cancelled */ }
+  } else {
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Copied to clipboard');
+    } catch {
+      showToast('Share not supported on this device');
+    }
+  }
+}
+
+/* ── Shortcuts overlay ───────────────────────────────────── */
+function openShortcuts() {
+  document.getElementById('shortcuts-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('shortcuts-close-btn')?.focus(), 100);
+}
+function closeShortcuts() {
+  document.getElementById('shortcuts-overlay').classList.remove('open');
+}
+
+/* ── Enhanced toast with icon ────────────────────────────── */
+function showToast(msg, dur, icon) {
+  const el = document.getElementById('toast');
+  el.innerHTML = '';
+  if (icon) {
+    const i = document.createElement('i');
+    i.setAttribute('data-lucide', icon);
+    el.appendChild(i);
+    refreshLucide();
+  }
+  const t  = document.createTextNode(msg);
+  el.appendChild(t);
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), dur || 2400);
+}
+
 async function boot(){
   await openDB();
   const savedTheme=await getSetting('theme')||'system';state.theme=savedTheme;applyTheme(savedTheme);
@@ -1592,7 +2056,9 @@ async function boot(){
     if(meta&&e.key==='s'&&state.currentSongId&&state.editMode){e.preventDefault();saveCurrent(false)}
     if(meta&&e.key==='Enter'&&state.currentSongId&&state.editMode){e.preventDefault();switchToView()}
     if(e.key==='F5'&&state.currentSongId&&!state.editMode){e.preventDefault();enterPerformanceMode()}
-    if(e.key==='Escape'){if(document.getElementById('delete-modal').classList.contains('open')){document.getElementById('delete-modal').classList.remove('open');state.deleteTarget=null;return}document.getElementById('search-input').blur();closeSidebar()}
+    if(meta&&e.key===','){e.preventDefault();openSettings();return;}
+  if(e.key==='?'&&!meta){openShortcuts();return;}
+  if(e.key==='Escape'){if(document.getElementById('shortcuts-overlay').classList.contains('open')){closeShortcuts();return;}if(state.settingsOpen){closeSettings();return;}if(document.getElementById('delete-modal').classList.contains('open')){document.getElementById('delete-modal').classList.remove('open');state.deleteTarget=null;return}document.getElementById('search-input').blur();closeSidebar()}
   });
   window.addEventListener('beforeunload',e=>{if(state.unsaved){e.preventDefault();e.returnValue=''}});
   await refreshSetlists();
@@ -1610,7 +2076,71 @@ async function boot(){
   const _origShowHud = showHud;
   // (showHud already calls refreshLucide via _syncScrollUI - nav updates on updatePerfNav)
 
-console.log('[Codeza] Phase 5 booted - Setlists active.');
+
+  // ── Phase 6 wiring ──────────────────────────────────────
+
+  // Offline detection
+  updateOnlineStatus();
+  window.addEventListener('online',  updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+
+  // SW update listener
+  listenForSWUpdates();
+
+  // Update banner actions
+  document.getElementById('update-reload')?.addEventListener('click', () => {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.waiting?.postMessage({ type: 'SKIP_WAITING' });
+      window.location.reload();
+    });
+  });
+  document.getElementById('update-dismiss')?.addEventListener('click', () => {
+    document.getElementById('update-banner').classList.remove('visible');
+  });
+
+  // Settings panel
+  document.getElementById('settings-btn').addEventListener('click', openSettings);
+  document.getElementById('settings-close-btn')?.addEventListener('click', closeSettings);
+  document.getElementById('settings-backdrop')?.addEventListener('click', closeSettings);
+
+  // Theme picker in settings
+  document.querySelectorAll('.theme-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.theme = btn.dataset.theme;
+      putSetting('theme', state.theme);
+      applyTheme(state.theme);
+      document.querySelectorAll('.theme-opt').forEach(b => {
+        b.style.fontWeight = b.dataset.theme === state.theme ? '600' : '';
+        b.style.color      = b.dataset.theme === state.theme ? 'var(--text-primary)' : '';
+      });
+    });
+  });
+
+  // Export / Import
+  document.getElementById('export-songs-btn')?.addEventListener('click', exportSongs);
+  document.getElementById('import-songs-btn')?.addEventListener('click', () => {
+    document.getElementById('import-file-input').click();
+  });
+  document.getElementById('import-file-input')?.addEventListener('change', function() {
+    if (this.files && this.files[0]) { importSongs(this.files[0]); this.value = ''; }
+  });
+
+  // Shortcuts overlay
+  document.getElementById('shortcuts-help-btn')?.addEventListener('click', openShortcuts);
+  document.getElementById('shortcuts-close-btn')?.addEventListener('click', closeShortcuts);
+  document.getElementById('shortcuts-overlay')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('shortcuts-overlay')) closeShortcuts();
+  });
+
+  // Focus traps
+  trapFocus('#settings-drawer');
+  trapFocus('#shortcuts-card');
+  trapFocus('.modal-card');
+
+  // Share button in song viewer topbar (added dynamically via setTopbarActions 'view')
+
+  console.log('[Codeza] Phase 6 booted — polish complete.');
+
 }
 boot().catch(console.error);
 })();

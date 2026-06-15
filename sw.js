@@ -1,24 +1,24 @@
-const CACHE = 'codeza-v3';
-const FONTS_CACHE = 'codeza-fonts-v3';
-
+/* Codeza Service Worker — v4 */
+const CACHE       = 'codeza-v4';
+const FONTS_CACHE = 'codeza-fonts-v4';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-apple-touch.png',
   'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js',
 ];
 
-// Install: pre-cache static shell
 self.addEventListener('install', e => {
   self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE).then(cache =>
-      cache.addAll(STATIC_ASSETS).catch(() => {})
-    )
+    caches.open(CACHE)
+      .then(c => c.addAll(STATIC_ASSETS).catch(() => {}))
   );
 });
 
-// Activate: clean up old caches
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
@@ -27,26 +27,43 @@ self.addEventListener('activate', e => {
             .map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
+      .then(() => {
+        // Notify all open tabs that a new version is active
+        return self.clients.matchAll({ type: 'window' }).then(clients => {
+          clients.forEach(c => c.postMessage({ type: 'SW_UPDATED' }));
+        });
+      })
   );
 });
 
-// Fetch: cache-first for fonts, cache-first with network fallback for rest
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-
   const url = new URL(e.request.url);
 
-  // Fonts — cache-first, long-lived
-  if (
-    url.origin === 'https://fonts.googleapis.com' ||
-    url.origin === 'https://fonts.gstatic.com'
-  ) {
+  // Fonts — cache first, very long-lived
+  if (url.origin === 'https://fonts.googleapis.com' ||
+      url.origin === 'https://fonts.gstatic.com') {
     e.respondWith(
-      caches.open(FONTS_CACHE).then(cache =>
-        cache.match(e.request).then(cached => {
-          if (cached) return cached;
+      caches.open(FONTS_CACHE).then(c =>
+        c.match(e.request).then(r => {
+          if (r) return r;
           return fetch(e.request).then(res => {
-            cache.put(e.request, res.clone());
+            c.put(e.request, res.clone()); return res;
+          });
+        })
+      )
+    );
+    return;
+  }
+
+  // CDN assets (Lucide) — cache first
+  if (url.hostname === 'unpkg.com') {
+    e.respondWith(
+      caches.open(CACHE).then(c =>
+        c.match(e.request).then(r => {
+          if (r) return r;
+          return fetch(e.request).then(res => {
+            if (res.ok) c.put(e.request, res.clone());
             return res;
           });
         })
@@ -55,17 +72,21 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Everything else — cache-first, network fallback
+  // App shell — cache first, network fallback
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
+    caches.match(e.request).then(r => {
+      if (r) return r;
       return fetch(e.request).then(res => {
-        if (res && res.status === 200) {
+        if (res && res.status === 200 && res.type !== 'opaque') {
           const clone = res.clone();
-          caches.open(CACHE).then(cache => cache.put(e.request, clone));
+          caches.open(CACHE).then(c => c.put(e.request, clone));
         }
         return res;
-      });
+      }).catch(() => caches.match('./index.html'));
     })
   );
+});
+
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
