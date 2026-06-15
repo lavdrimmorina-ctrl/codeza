@@ -1,5 +1,5 @@
 /* Codeza Service Worker — v4 */
-const CACHE       = 'codeza-v4';
+const CACHE       = 'codeza-v5.5';
 const FONTS_CACHE = 'codeza-fonts-v4';
 const STATIC_ASSETS = [
   './',
