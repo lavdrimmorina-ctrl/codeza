@@ -813,6 +813,167 @@
     /* ── Import/Export area in settings ──────────────────── */
     #import-file-input { display: none; }
 
+
+    /* ═══ FOLDERS & FULL-TEXT SEARCH ═══════════════════════ */
+
+    /* ── Folder group in sidebar ─────────────────────────── */
+    .folder-group { margin-bottom: 2px; }
+    .folder-header {
+      display: flex; align-items: center;
+      width: 100%; padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      border: none; background: transparent;
+      cursor: pointer; gap: 7px;
+      -webkit-tap-highlight-color: transparent;
+      transition: background var(--transition);
+    }
+    .folder-header:hover { background: var(--accent-soft); }
+    .folder-chevron {
+      width: 14px; height: 14px;
+      color: var(--text-tertiary);
+      transition: transform 200ms ease;
+      flex-shrink: 0;
+    }
+    .folder-chevron.open { transform: rotate(90deg); }
+    .folder-icon { width: 16px; height: 16px; color: var(--text-secondary); flex-shrink: 0; stroke-width: 1.7; }
+    .folder-name {
+      font-size: 13px; font-weight: 500;
+      color: var(--text-primary); flex: 1;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-align: left;
+    }
+    .folder-count {
+      font-size: 11px; color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+    .folder-songs {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 280ms cubic-bezier(0.4,0,0.2,1);
+    }
+    .folder-songs.open { max-height: 2000px; }
+
+    /* Indent song-items inside a folder */
+    .folder-songs .song-item { padding-left: 26px; }
+
+    /* Unfiled section label */
+    .unfiled-label {
+      font-size: 10.5px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-tertiary);
+      padding: 8px 10px 4px;
+      user-select: none;
+    }
+
+    /* ── Folder picker in editor ──────────────────────────── */
+    .field-select {
+      height: 38px; padding: 0 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: var(--font-ui); font-size: 14px;
+      outline: none; cursor: pointer;
+      transition: border-color var(--transition);
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239b9893' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+    .field-select:focus { border-color: var(--border-strong); }
+
+    /* ── Manage folders modal ─────────────────────────────── */
+    #folders-modal {
+      position: fixed; inset: 0; z-index: 155;
+      background: rgba(0,0,0,0.45);
+      display: none; align-items: center;
+      justify-content: center; padding: 24px;
+    }
+    #folders-modal.open { display: flex; }
+    .folders-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      max-width: 380px; width: 100%;
+      box-shadow: var(--shadow-md);
+      max-height: 80dvh;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .folders-card-title {
+      font-size: 16px; font-weight: 500;
+      color: var(--text-primary); letter-spacing: -0.01em;
+    }
+    .folder-list-manage {
+      flex: 1; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 4px;
+      max-height: 240px;
+    }
+    .folder-manage-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .folder-manage-name {
+      flex: 1; font-size: 13.5px;
+      color: var(--text-primary);
+    }
+    .new-folder-row {
+      display: flex; gap: 8px;
+    }
+    .new-folder-input {
+      flex: 1; height: 36px; padding: 0 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: var(--font-ui); font-size: 13.5px;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .new-folder-input:focus { border-color: var(--border-strong); }
+    .new-folder-input::placeholder { color: var(--text-tertiary); }
+
+    /* ── Full-text search results ─────────────────────────── */
+    .search-match mark {
+      background: transparent;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .search-result-body { font-size: 11.5px; color: var(--text-tertiary); margin-top: 2px; }
+    .search-result-snippet {
+      font-size: 11px; color: var(--text-tertiary);
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; margin-top: 1px;
+      font-style: italic;
+    }
+
+    /* Sidebar search clear button */
+    .search-clear {
+      position: absolute; right: 8px;
+      background: none; border: none;
+      color: var(--text-tertiary); cursor: pointer;
+      padding: 4px; border-radius: 3px;
+      display: none; align-items: center; justify-content: center;
+    }
+    .search-clear.visible { display: flex; }
+    .search-clear svg { width: 13px; height: 13px; stroke-width: 2; }
+
+    /* Manage folders btn in sidebar */
+    .folders-manage-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11.5px; color: var(--text-tertiary);
+      background: none; border: none; cursor: pointer;
+      padding: 4px 10px 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: color var(--transition);
+    }
+    .folders-manage-btn:hover { color: var(--text-primary); }
+    .folders-manage-btn svg { width: 12px; height: 12px; stroke-width: 2; }
+
   </style>
 </head>
 <body>
@@ -857,7 +1018,8 @@
     <div class="sidebar-search">
       <div class="search-wrap">
         <i data-lucide="search"></i>
-        <input type="search" class="search-input" placeholder="Search songs..." id="search-input" aria-label="Search songs" />
+        <input type="search" class="search-input" placeholder="Search songs..." id="search-input" aria-label="Search songs" autocomplete="off" />
+        <button class="search-clear" id="search-clear-btn" aria-label="Clear search"><i data-lucide="x"></i></button>
       </div>
     </div>
     <div class="sidebar-section">
@@ -866,7 +1028,10 @@
       <button class="nav-item" data-view="setlists"><i data-lucide="list-music"></i>Setlists<span class="badge" id="badge-setlists">0</span></button>
     </div>
     <div class="sidebar-section" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
-      <div class="sidebar-section-label">Songs</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 10px 4px;">
+        <span class="sidebar-section-label" style="padding:0;margin:0;">Songs</span>
+        <button class="folders-manage-btn" id="manage-folders-btn" title="Manage folders"><i data-lucide="folder-plus"></i>Folders</button>
+      </div>
       <div class="song-list" id="song-list" role="list">
         <div class="empty-state" id="song-list-empty" style="height:auto;padding:20px 10px;gap:8px;">
           <div class="empty-state-icon" style="width:38px;height:38px;"><i data-lucide="music-2" style="width:18px;height:18px;"></i></div>
@@ -921,6 +1086,14 @@
             <div class="meta-row">
               <div class="field-group"><label class="field-label" for="editor-bpm">BPM</label><input type="number" class="field-input" id="editor-bpm" placeholder="e.g. 120" min="20" max="300" /></div>
               <div class="field-group"><label class="field-label" for="editor-tags">Tags</label><input type="text" class="field-input" id="editor-tags" placeholder="rock, ballad..." autocomplete="off" /></div>
+            </div>
+            <div class="meta-row" style="grid-template-columns:1fr;">
+              <div class="field-group">
+                <label class="field-label" for="editor-folder">Folder</label>
+                <select class="field-select" id="editor-folder" aria-label="Folder">
+                  <option value="">No folder</option>
+                </select>
+              </div>
             </div>
             <div class="format-toolbar" role="toolbar">
               <button class="fmt-btn" data-insert="# Verse"><i data-lucide="align-left"></i>Verse</button>
@@ -1151,6 +1324,23 @@ These are your verse lyrics
   </div>
 </div>
 
+
+<!-- Folders modal -->
+<div id="folders-modal" role="dialog" aria-modal="true" aria-label="Manage folders">
+  <div class="folders-card">
+    <div class="folders-card-title">Manage Folders</div>
+    <div class="folder-list-manage" id="folder-list-manage"></div>
+    <div class="new-folder-row">
+      <input type="text" class="new-folder-input" id="new-folder-input"
+        placeholder="New folder name..." autocomplete="off" maxlength="48" />
+      <button class="btn-primary" id="add-folder-btn" style="padding:7px 14px;font-size:13px;">
+        <i data-lucide="plus"></i>Add
+      </button>
+    </div>
+    <button class="btn-ghost" id="folders-modal-close" style="width:100%;justify-content:center;font-size:13px;">Done</button>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="delete-modal" role="dialog" aria-modal="true">
   <div class="modal-card">
     <div class="modal-title">Delete this song?</div>
@@ -1179,7 +1369,8 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 let db=null;
-function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('codeza-db',2);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('songs')){const s=d.createObjectStore('songs',{keyPath:'id'});s.createIndex('updatedAt','updatedAt');s.createIndex('title','title')}if(!d.objectStoreNames.contains('setlists')){const sl=d.createObjectStore('setlists',{keyPath:'id'});sl.createIndex('updatedAt','updatedAt');}else{}if(!d.objectStoreNames.contains('settings'))d.createObjectStore('settings',{keyPath:'key'})};r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=()=>rej(r.error)})}
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('codeza-db',3);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('songs')){const s=d.createObjectStore('songs',{keyPath:'id'});s.createIndex('updatedAt','updatedAt');s.createIndex('title','title')}if(!d.objectStoreNames.contains('setlists')){const sl=d.createObjectStore('setlists',{keyPath:'id'});sl.createIndex('updatedAt','updatedAt');}else{}if(!d.objectStoreNames.contains('settings'))d.createObjectStore('settings',{keyPath:'key'});
+if(!d.objectStoreNames.contains('folders')){d.createObjectStore('folders',{keyPath:'id'})}};r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=()=>rej(r.error)})}
 function txn(s,m='readonly'){return db.transaction(s,m).objectStore(s)}
 function getAllSongs(){return new Promise((res,rej)=>{const r=txn('songs').getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 function putSong(s){return new Promise((res,rej)=>{const r=txn('songs','readwrite').put(s);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
@@ -1187,15 +1378,19 @@ function delSong(id){return new Promise((res,rej)=>{const r=txn('songs','readwri
 function getAllSetlists(){return new Promise((res,rej)=>{const r=txn('setlists').getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 function putSetlist(s){return new Promise((res,rej)=>{const r=txn('setlists','readwrite').put(s);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 function delSetlist(id){return new Promise((res,rej)=>{const r=txn('setlists','readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function getAllFolders(){return new Promise((res,rej)=>{const r=txn('folders').getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function putFolder(f){return new Promise((res,rej)=>{const r=txn('folders','readwrite').put(f);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function delFolder(id){return new Promise((res,rej)=>{const r=txn('folders','readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
 function getSetting(k){return new Promise(res=>{const r=txn('settings').get(k);r.onsuccess=()=>res(r.result?.value??null);r.onerror=()=>res(null)})}
 function putSetting(k,v){return new Promise((res,rej)=>{const r=txn('settings','readwrite').put({key:k,value:v});r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
-const state={songs:[],setlists:[],currentView:'home',currentSongId:null,editMode:false,
+const state={songs:[],setlists:[],folders:[],currentView:'home',currentSongId:null,editMode:false,
   unsaved:false,theme:'system',searchQuery:'',deleteTarget:null,
   perfMode:false,perfFontSize:22,hudVisible:true,
   scrolling:false,scrollSpeed:4,scrollPaused:false,
   activeSetlistId:null,setlistSongIndex:0,
   editingSetlistId:null,
-  settingsOpen:false};
+  settingsOpen:false,
+  folderStates:{}};
 const FONT_MIN=14,FONT_MAX=42,FONT_STEP=2;
 function getSystemTheme(){return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
 function applyTheme(t){
@@ -1452,8 +1647,8 @@ function highlightSidebarItem(id){document.querySelectorAll('.song-item').forEac
 async function switchToEdit(){const song=state.songs.find(s=>s.id===state.currentSongId);if(!song)return;loadSongIntoEditor(song);showView('song','edit');updateSongTopbar(song,'edit');document.getElementById('editor-title').focus()}
 async function switchToView(){if(state.unsaved){clearTimeout(saveTimer);await saveCurrent(true)}const song=state.songs.find(s=>s.id===state.currentSongId);if(!song)return;renderSongViewer(song);showView('song','view');updateSongTopbar(song,'view')}
 async function newSong(){if(state.currentSongId&&state.unsaved){clearTimeout(saveTimer);await saveCurrent(true)}const id=genId();const now=new Date().toISOString();const song={id,title:'',artist:'',key:'',bpm:null,tags:'',body:'',createdAt:now,updatedAt:now};await putSong(song);await refreshSongs();state.currentSongId=id;setUnsaved(false);highlightSidebarItem(id);loadSongIntoEditor(song);setTopbarTitle(songBreadcrumb('New song'));setTopbarActions('edit');showView('song','edit');document.getElementById('editor-title').focus();if(window.innerWidth<=768)closeSidebar()}
-function loadSongIntoEditor(song){document.getElementById('editor-title').value=song.title||'';document.getElementById('editor-artist').value=song.artist||'';document.getElementById('editor-key').value=song.key||'';document.getElementById('editor-bpm').value=song.bpm||'';document.getElementById('editor-tags').value=song.tags||'';const b=document.getElementById('editor-body');b.value=song.body||'';autoGrowTextarea(b);updateWordCount()}
-function readEditor(){return{title:document.getElementById('editor-title').value.trim(),artist:document.getElementById('editor-artist').value.trim(),key:document.getElementById('editor-key').value.trim(),bpm:parseInt(document.getElementById('editor-bpm').value)||null,tags:document.getElementById('editor-tags').value.trim(),body:document.getElementById('editor-body').value}}
+function loadSongIntoEditor(song){document.getElementById('editor-title').value=song.title||'';document.getElementById('editor-artist').value=song.artist||'';document.getElementById('editor-key').value=song.key||'';document.getElementById('editor-bpm').value=song.bpm||'';document.getElementById('editor-tags').value=song.tags||'';populateFolderSelect(song.folderId||null);const b=document.getElementById('editor-body');b.value=song.body||'';autoGrowTextarea(b);updateWordCount()}
+function readEditor(){const folderEl=document.getElementById('editor-folder');return{title:document.getElementById('editor-title').value.trim(),artist:document.getElementById('editor-artist').value.trim(),key:document.getElementById('editor-key').value.trim(),bpm:parseInt(document.getElementById('editor-bpm').value)||null,tags:document.getElementById('editor-tags').value.trim(),folderId:folderEl?folderEl.value||null:null,body:document.getElementById('editor-body').value}}
 function autoGrowTextarea(el){el.style.height='auto';el.style.height=Math.max(420,el.scrollHeight)+'px'}
 function updateWordCount(){const b=document.getElementById('editor-body').value;const w=document.getElementById('word-count');if(w){const n=wordCount(b);w.textContent=`${n} word${n!==1?'s':''}`}}
 function setUnsaved(v){state.unsaved=v;document.getElementById('unsaved-dot').classList.toggle('visible',v)}
@@ -2047,6 +2242,242 @@ function showToast(msg, dur, icon) {
   toastTimer = setTimeout(() => el.classList.remove('show'), dur || 2400);
 }
 
+
+/* ═══════════════════════════════════════════════════════════
+   FOLDERS ENGINE + ENHANCED SEARCH
+═══════════════════════════════════════════════════════════ */
+
+/* ── CRUD ──────────────────────────────────────────────── */
+async function refreshFolders() {
+  state.folders = await getAllFolders();
+  state.folders.sort((a,b) => (a.name||'').localeCompare(b.name||''));
+}
+
+async function createFolder(name) {
+  if (!name.trim()) return null;
+  const existing = state.folders.find(f => f.name.toLowerCase() === name.trim().toLowerCase());
+  if (existing) return existing.id;
+  const folder = { id: genId(), name: name.trim(), createdAt: new Date().toISOString() };
+  await putFolder(folder);
+  await refreshFolders();
+  return folder.id;
+}
+
+async function deleteFolder(id) {
+  // Unassign all songs from this folder
+  const affected = state.songs.filter(s => s.folderId === id);
+  for (const song of affected) {
+    song.folderId = null;
+    await putSong(song);
+  }
+  await delFolder(id);
+  await refreshFolders();
+  await refreshSongs();
+}
+
+/* ── Populate folder <select> in editor ─────────────────── */
+function populateFolderSelect(currentFolderId) {
+  const sel = document.getElementById('editor-folder');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">No folder</option>';
+  state.folders.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f.id;
+    opt.textContent = f.name;
+    if (f.id === currentFolderId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+/* ── Render sidebar song list with folder grouping ───────── */
+function renderSongList(songs) {
+  const list  = document.getElementById('song-list');
+  const empty = document.getElementById('song-list-empty');
+  // Remove existing dynamic items
+  Array.from(list.querySelectorAll('.song-item,.folder-group,.unfiled-label')).forEach(el => el.remove());
+
+  if (!songs.length) {
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const isSearching = !!state.searchQuery;
+
+  if (isSearching || !state.folders.length) {
+    // Flat list (search results or no folders)
+    songs.forEach(song => list.insertBefore(_makeSongItem(song), empty));
+    refreshLucide();
+    return;
+  }
+
+  // Grouped by folder
+  const folderMap = {};
+  state.folders.forEach(f => { folderMap[f.id] = []; });
+  const unfiled = [];
+
+  songs.forEach(song => {
+    if (song.folderId && folderMap[song.folderId]) {
+      folderMap[song.folderId].push(song);
+    } else {
+      unfiled.push(song);
+    }
+  });
+
+  // Render folder groups
+  state.folders.forEach(folder => {
+    const folderSongs = folderMap[folder.id] || [];
+    const group = document.createElement('div');
+    group.className = 'folder-group';
+    group.dataset.folderId = folder.id;
+
+    const isOpen = state.folderStates[folder.id] !== false; // default open
+
+    const header = document.createElement('button');
+    header.className = 'folder-header';
+    header.setAttribute('aria-expanded', isOpen);
+    header.innerHTML =
+      '<svg class="folder-chevron' + (isOpen ? ' open' : '') + '" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>'
+      + '<i data-lucide="folder" class="folder-icon"></i>'
+      + '<span class="folder-name">' + esc(folder.name) + '</span>'
+      + '<span class="folder-count">' + folderSongs.length + '</span>';
+
+    const songsWrap = document.createElement('div');
+    songsWrap.className = 'folder-songs' + (isOpen ? ' open' : '');
+
+    header.addEventListener('click', () => {
+      const nowOpen = !songsWrap.classList.contains('open');
+      songsWrap.classList.toggle('open', nowOpen);
+      header.querySelector('.folder-chevron').classList.toggle('open', nowOpen);
+      header.setAttribute('aria-expanded', nowOpen);
+      state.folderStates[folder.id] = nowOpen;
+    });
+
+    folderSongs.forEach(song => songsWrap.appendChild(_makeSongItem(song)));
+    group.appendChild(header);
+    group.appendChild(songsWrap);
+    list.insertBefore(group, empty);
+  });
+
+  // Unfiled songs
+  if (unfiled.length) {
+    if (state.folders.length > 0) {
+      const label = document.createElement('div');
+      label.className = 'unfiled-label';
+      label.textContent = 'Unfiled';
+      list.insertBefore(label, empty);
+    }
+    unfiled.forEach(song => list.insertBefore(_makeSongItem(song), empty));
+  }
+
+  refreshLucide();
+}
+
+function _makeSongItem(song) {
+  const btn = document.createElement('button');
+  btn.className = 'song-item' + (song.id === state.currentSongId ? ' active' : '');
+  btn.setAttribute('role', 'listitem');
+  btn.setAttribute('data-id', song.id);
+
+  const q = state.searchQuery.toLowerCase();
+  let titleHtml = esc(song.title || 'Untitled');
+  let snippetHtml = '';
+
+  if (q) {
+    // Highlight match in title
+    titleHtml = _highlight(song.title || 'Untitled', q);
+    // Find snippet in body
+    const bodyLower = (song.body || '').toLowerCase();
+    const bodyIdx   = bodyLower.indexOf(q);
+    if (bodyIdx >= 0 && !(song.title||'').toLowerCase().includes(q)) {
+      const raw   = song.body.substring(Math.max(0, bodyIdx - 20), bodyIdx + 60);
+      snippetHtml = '<div class="search-result-snippet">…' + _highlight(raw, q) + '…</div>';
+    }
+  }
+
+  btn.innerHTML =
+    '<div class="song-item-icon"><i data-lucide="music-2"></i></div>'
+    + '<div class="song-item-body">'
+    + '<div class="song-item-title">' + titleHtml + '</div>'
+    + '<div class="song-item-meta">' + esc(song.artist || 'No artist') + (song.key ? ' · ' + esc(song.key) : '') + '</div>'
+    + snippetHtml
+    + '</div>';
+
+  btn.addEventListener('click', () => openSong(song.id));
+  return btn;
+}
+
+function _highlight(text, query) {
+  if (!query) return esc(text);
+  const escaped = esc(text);
+  const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  return escaped.replace(re, '<mark>$1</mark>');
+}
+
+/* ── Enhanced search (title + artist + tags + body) ──────── */
+async function refreshSongs() {
+  state.songs = await getAllSongs();
+  state.songs.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  await refreshFolders();
+
+  const q = state.searchQuery.toLowerCase().trim();
+  let filtered;
+  if (!q) {
+    filtered = state.songs;
+  } else {
+    filtered = state.songs.filter(s =>
+      (s.title  || '').toLowerCase().includes(q) ||
+      (s.artist || '').toLowerCase().includes(q) ||
+      (s.tags   || '').toLowerCase().includes(q) ||
+      (s.body   || '').toLowerCase().includes(q)   // full-text search in lyrics
+    );
+  }
+
+  renderSongList(filtered);
+  renderHomeStats();
+  updateStorageInfo();
+  populateFolderSelect(null);
+}
+
+/* ── Manage folders modal ────────────────────────────────── */
+function openFoldersModal() {
+  document.getElementById('folders-modal').classList.add('open');
+  renderFolderManageList();
+  document.getElementById('new-folder-input').focus();
+}
+function closeFoldersModal() {
+  document.getElementById('folders-modal').classList.remove('open');
+}
+
+function renderFolderManageList() {
+  const list = document.getElementById('folder-list-manage');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!state.folders.length) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--text-tertiary);padding:8px 10px;">No folders yet.</div>';
+    return;
+  }
+  state.folders.forEach(folder => {
+    const count = state.songs.filter(s => s.folderId === folder.id).length;
+    const row = document.createElement('div');
+    row.className = 'folder-manage-row';
+    row.innerHTML =
+      '<i data-lucide="folder" style="width:15px;height:15px;color:var(--text-tertiary);stroke-width:1.7;flex-shrink:0;"></i>'
+      + '<span class="folder-manage-name">' + esc(folder.name) + '</span>'
+      + '<span style="font-size:11.5px;color:var(--text-tertiary);">' + count + '</span>'
+      + '<button class="icon-btn icon-btn--destructive del-folder-btn" data-id="' + folder.id + '" aria-label="Delete folder" style="width:28px;height:28px;">'
+      + '<i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>';
+    row.querySelector('.del-folder-btn').addEventListener('click', async () => {
+      await deleteFolder(folder.id);
+      renderFolderManageList();
+      populateFolderSelect(document.getElementById('editor-folder')?.value || null);
+      showToast('Folder deleted');
+    });
+    list.appendChild(row);
+  });
+  refreshLucide();
+}
+
 async function boot(){
   await openDB();
   const savedTheme=await getSetting('theme')||'system';state.theme=savedTheme;applyTheme(savedTheme);
@@ -2057,7 +2488,7 @@ async function boot(){
     if(sl)sl.value=savedSpeed;
   }
   document.getElementById('font-val').textContent=state.perfFontSize;
-  await refreshSongs();showView('home');checkSidebarToggle();window.addEventListener('resize',checkSidebarToggle);refreshLucide();
+  await refreshFolders();await refreshSongs();showView('home');checkSidebarToggle();window.addEventListener('resize',checkSidebarToggle);refreshLucide();
   document.getElementById('theme-toggle').addEventListener('click',cycleTheme);
   document.getElementById('new-song-btn').addEventListener('click',newSong);
   document.getElementById('cta-new-song').addEventListener('click',newSong);
@@ -2065,7 +2496,36 @@ async function boot(){
   document.getElementById('sidebar-toggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.contains('open')?closeSidebar():openSidebar()});
   document.getElementById('sidebar-overlay').addEventListener('click',closeSidebar);
   document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{btn.addEventListener('click',()=>{showView(btn.dataset.view);if(window.innerWidth<=768)closeSidebar()})});
-  document.getElementById('search-input').addEventListener('input',e=>{state.searchQuery=e.target.value;refreshSongs()});
+  document.getElementById('search-input').addEventListener('input', e => {
+    state.searchQuery = e.target.value;
+    const clearBtn = document.getElementById('search-clear-btn');
+    if (clearBtn) clearBtn.classList.toggle('visible', !!e.target.value);
+    refreshSongs();
+  });
+  document.getElementById('search-clear-btn')?.addEventListener('click', () => {
+    const inp = document.getElementById('search-input');
+    inp.value = ''; state.searchQuery = '';
+    document.getElementById('search-clear-btn').classList.remove('visible');
+    refreshSongs(); inp.focus();
+  });
+  document.getElementById('manage-folders-btn')?.addEventListener('click', openFoldersModal);
+  document.getElementById('folders-modal-close')?.addEventListener('click', closeFoldersModal);
+  document.getElementById('folders-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('folders-modal')) closeFoldersModal();
+  });
+  document.getElementById('add-folder-btn')?.addEventListener('click', async () => {
+    const inp = document.getElementById('new-folder-input');
+    if (!inp.value.trim()) return;
+    await createFolder(inp.value);
+    inp.value = '';
+    renderFolderManageList();
+    populateFolderSelect(document.getElementById('editor-folder')?.value || null);
+    showToast('Folder created');
+  });
+  document.getElementById('new-folder-input')?.addEventListener('keydown', async e => {
+    if (e.key === 'Enter') document.getElementById('add-folder-btn')?.click();
+  });
+
   // Settings — bound early so nothing async can block it
   document.getElementById('settings-btn').addEventListener('click', openSettings);
   document.getElementById('settings-close-btn')?.addEventListener('click', closeSettings);
