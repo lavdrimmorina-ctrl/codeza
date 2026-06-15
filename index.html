@@ -1049,6 +1049,108 @@ These are your verse lyrics
   </div>
 </div>
 
+<!-- Paused scroll hint -->
+<div id="scroll-paused-hint" aria-live="polite">Paused — tap to resume</div>
+
+<!-- Perf: previous/next song in setlist -->
+<div id="perf-song-nav" aria-label="Song navigation">
+  <button class="perf-nav-btn" id="perf-prev-btn" aria-label="Previous song" title="Previous song (←)">
+    <i data-lucide="chevron-up"></i>
+  </button>
+  <button class="perf-nav-btn" id="perf-next-btn" aria-label="Next song" title="Next song (→)">
+    <i data-lucide="chevron-down"></i>
+  </button>
+</div>
+<div id="perf-swipe-hint" aria-live="polite"></div>
+
+<!-- Settings panel (bottom sheet) -->
+<div id="settings-panel" role="dialog" aria-modal="true" aria-label="Settings">
+  <div id="settings-backdrop"></div>
+  <div id="settings-drawer">
+    <div class="settings-handle" aria-hidden="true"></div>
+    <div class="settings-title">Settings</div>
+
+    <div class="settings-section">
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Theme</div>
+          <div class="settings-row-sub">Appearance of the app</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-ghost theme-opt" data-theme="light"  style="font-size:12px;padding:5px 12px;">Light</button>
+          <button class="btn-ghost theme-opt" data-theme="dark"   style="font-size:12px;padding:5px 12px;">Dark</button>
+          <button class="btn-ghost theme-opt" data-theme="system" style="font-size:12px;padding:5px 12px;">Auto</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-tertiary);padding:4px 0 8px;">Library</div>
+      <div class="settings-btn-row">
+        <button class="btn-ghost" id="export-songs-btn" style="font-size:13px;">
+          <i data-lucide="download"></i>Export songs
+        </button>
+        <button class="btn-ghost" id="import-songs-btn" style="font-size:13px;">
+          <i data-lucide="upload"></i>Import songs
+        </button>
+        <input type="file" id="import-file-input" accept=".json" style="display:none;" />
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-tertiary);padding:4px 0 8px;">About</div>
+      <div class="settings-row" style="padding:6px 0;">
+        <span style="font-size:13px;color:var(--text-secondary);">Codéza — Phase 6</span>
+        <button class="btn-ghost" id="shortcuts-help-btn" style="font-size:12px;padding:5px 12px;">
+          <i data-lucide="keyboard" style="width:13px;height:13px;"></i>Shortcuts
+        </button>
+      </div>
+    </div>
+
+    <div style="padding:12px 24px 20px;">
+      <button class="btn-ghost" id="settings-close-btn" style="width:100%;justify-content:center;font-size:13px;">
+        Done
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Keyboard shortcuts overlay -->
+<div id="shortcuts-overlay" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+  <div id="shortcuts-card">
+    <div class="shortcuts-title">Keyboard shortcuts</div>
+    <div class="shortcut-group">
+      <div class="shortcut-group-label">Global</div>
+      <div class="shortcut-row"><span class="shortcut-desc">New song</span><div class="shortcut-keys"><kbd>⌘</kbd><kbd>N</kbd></div></div>
+      <div class="shortcut-row"><span class="shortcut-desc">Search</span><div class="shortcut-keys"><kbd>⌘</kbd><kbd>K</kbd></div></div>
+      <div class="shortcut-row"><span class="shortcut-desc">Settings</span><div class="shortcut-keys"><kbd>⌘</kbd><kbd>,</kbd></div></div>
+      <div class="shortcut-row"><span class="shortcut-desc">Shortcuts reference</span><div class="shortcut-keys"><kbd>?</kbd></div></div>
+    </div>
+    <div class="shortcut-group">
+      <div class="shortcut-group-label">Editor</div>
+      <div class="shortcut-row"><span class="shortcut-desc">Save</span><div class="shortcut-keys"><kbd>⌘</kbd><kbd>S</kbd></div></div>
+      <div class="shortcut-row"><span class="shortcut-desc">Preview</span><div class="shortcut-keys"><kbd>⌘</kbd><kbd>↵</kbd></div></div>
+    </div>
+    <div class="shortcut-group">
+      <div class="shortcut-group-label">Song viewer</div>
+      <div class="shortcut-row"><span class="shortcut-desc">Enter Performance Mode</span><div class="shortcut-keys"><kbd>F5</kbd></div></div>
+    </div>
+    <div class="shortcut-group">
+      <div class="shortcut-group-label">Performance Mode</div>
+      <div class="shortcut-row"><span class="shortcut-desc">Exit</span><div class="shortcut-keys"><kbd>Esc</kbd></div></div>
+      <div class="shortcut-row"><span class="shortcut-desc">Toggle auto-scroll</span><div class="shortcut-keys"><kbd>Space</kbd></div></div>
+      <div class="shortcut-row"><span class="shortcut-desc">Scroll up / down</span><div class="shortcut-keys"><kbd>↑</kbd><kbd>↓</kbd></div></div>
+      <div class="shortcut-row"><span class="shortcut-desc">Next / prev song</span><div class="shortcut-keys"><kbd>→</kbd><kbd>←</kbd></div></div>
+      <div class="shortcut-row"><span class="shortcut-desc">Font size</span><div class="shortcut-keys"><kbd>+</kbd><kbd>−</kbd></div></div>
+    </div>
+    <div style="padding-top:8px;">
+      <button class="btn-ghost" id="shortcuts-close-btn" style="width:100%;justify-content:center;font-size:13px;">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="delete-modal" role="dialog" aria-modal="true">
   <div class="modal-card">
     <div class="modal-title">Delete this song?</div>
